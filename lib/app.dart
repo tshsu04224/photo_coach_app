@@ -1,10 +1,13 @@
 // 整個app的整體主架構邏輯設計
 
 import 'package:flutter/material.dart';
+import 'package:photo_coach/views/chat_page.dart';
 import 'package:provider/provider.dart';
 import 'views/login_page.dart';
 import 'views/home_page.dart';
 import 'controllers/auth_controller.dart';
+import 'themes/app_theme.dart';
+import 'views/chat_page.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -17,12 +20,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'PhotoCoach',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.light(),
       // 根據登入狀態顯示不同畫面
-      home: auth.isLoggedIn ? const HomePage() : const LoginPage(),
+      home: const ChatPage(),
     );
   }
 }
