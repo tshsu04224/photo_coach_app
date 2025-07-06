@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:photo_coach/themes/app_theme.dart';
 import '../models/chat_message.dart';
 import '../widgets/chat_bubble.dart';
+import '../services/api_service.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -15,7 +15,6 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
-    // 初始 AI 問候
     _messages.add(ChatMessage(text: '哈囉，今天想要拍什麼呢？', fromUser: false));
   }
 
@@ -41,13 +40,13 @@ class _ChatPageState extends State<ChatPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.error_outline),
-            onPressed: () {/* TODO: 警告動作 */},
+            onPressed: () {/* TODO: 回報問題 */},
           ),
         ],
       ),
       body: Column(
         children: [
-          // 對話列表
+          // 對話區
           Expanded(
             child: ListView.builder(
               reverse: true,
@@ -55,12 +54,12 @@ class _ChatPageState extends State<ChatPage> {
               itemCount: _messages.length,
               itemBuilder: (context, idx) {
                 final msg = _messages[_messages.length - 1 - idx];
-                return ChatBubble(text: msg.text, fromUser: msg.fromUser);
+                return ChatBubble(text: msg.text, fromUser: msg.fromUser, subTopics: msg.subTopics, moodboardUrl: msg.moodboardUrl,);
               },
             ),
           ),
 
-          // 底部輸入：含 SafeArea
+          // 底部輸入區（include safeArea)
           SafeArea(
             top: false,
             child: Container(
@@ -81,7 +80,6 @@ class _ChatPageState extends State<ChatPage> {
                     color: Colors.grey.shade600,
                     onPressed: () {},
                   ),
-                  // 只有這一塊是灰色圓角
                   Expanded(
                     child: TextField(
                       controller: _controller,
@@ -122,14 +120,37 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  void _sendMessage() {
+  void _sendMessage() async {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
-    setState(() {
-      _messages.add(ChatMessage(text: text, fromUser: true));
-      // TODO: 呼叫 AI API，拿到 response 再 add:
-      // _messages.add(ChatMessage(text: aiReply, fromUser: false));
-    });
+    setState(() => _messages.add(ChatMessage(text: text, fromUser: true)));
     _controller.clear();
+
+    try {
+      final aiResp = await ApiService.chat(text);
+      setState(() {
+        _messages.add(ChatMessage(
+          text: aiResp.reply,
+          fromUser: false,
+          subTopics: aiResp.subTopics.isNotEmpty ? aiResp.subTopics : null,
+          visualKeywords: aiResp.visualKeywords,
+        ));
+      });
+
+      // mooodboard
+      if (aiResp.visualKeywords.isNotEmpty) {
+        final url = await ApiService.generateMoodboard(aiResp.visualKeywords);
+        setState(() {
+          _messages.add(ChatMessage(
+            text: "這是根據你想拍的主題產生的風格參考圖：",
+            fromUser: false,
+            moodboardUrl: url,
+          ));
+        });
+      }
+
+    } catch (e) {
+      setState(() => _messages.add(ChatMessage(text: '錯誤：$e', fromUser: false)));
+    }
   }
 }
