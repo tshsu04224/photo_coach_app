@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:photo_coach/themes/app_theme.dart';
 import '../models/chat_message.dart';
-import '../widgets/chat_bubble.dart';
+import 'widgets/chat_bubble.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
