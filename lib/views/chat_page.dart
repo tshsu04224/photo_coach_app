@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/chat_message.dart';
-import '../widgets/chat_bubble.dart';
+import 'widgets/chat_bubble.dart';
 import '../services/api_service.dart';
 
 class ChatPage extends StatefulWidget {
