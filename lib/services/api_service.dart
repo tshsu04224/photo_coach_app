@@ -34,4 +34,18 @@ class ApiService {
     }
   }
 
+  static Future<List<String>> getVisualKeywords(List<String> subTopics) async {
+    final response = await http.post(
+      Uri.parse('$_baseUrl/ai/keywords'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'sub_topics': subTopics}),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return List<String>.from(data['visual_keywords'] ?? []);
+    } else {
+      throw Exception('無法取得 visual keywords');
+    }
+  }
 }

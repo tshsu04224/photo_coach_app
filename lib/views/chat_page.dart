@@ -5,10 +5,10 @@ import '../services/api_service.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
-  @override _ChatPageState createState() => _ChatPageState();
+  @override ChatPageState createState() => ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class ChatPageState extends State<ChatPage> {
   final _controller = TextEditingController();
   final List<ChatMessage> _messages = [];
 
@@ -18,9 +18,27 @@ class _ChatPageState extends State<ChatPage> {
     _messages.add(ChatMessage(text: '哈囉，今天想要拍什麼呢？', fromUser: false));
   }
 
+  void _editSubTopic(int messageIndex, int topicIndex, String newValue) {
+    setState(() {
+      final topics = _messages[messageIndex].subTopics!;
+      if (topicIndex < topics.length) {
+        topics[topicIndex] = newValue; // 編輯
+      } else {
+        topics.add(newValue); // 新增
+      }
+    });
+  }
+
+  void _deleteSubTopic(int messageIndex, int topicIndex) {
+    setState(() {
+      _messages[messageIndex].subTopics!.removeAt(topicIndex);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         foregroundColor: Colors.black,
         backgroundColor: Colors.white,
@@ -54,7 +72,18 @@ class _ChatPageState extends State<ChatPage> {
               itemCount: _messages.length,
               itemBuilder: (context, idx) {
                 final msg = _messages[_messages.length - 1 - idx];
-                return ChatBubble(text: msg.text, fromUser: msg.fromUser, subTopics: msg.subTopics, moodboardUrl: msg.moodboardUrl,);
+                return ChatBubble(
+                  text: msg.text,
+                  fromUser: msg.fromUser,
+                  subTopics: msg.subTopics,
+                  moodboardUrl: msg.moodboardUrl,
+                  onEditSubTopic: (topicIndex, newValue) =>
+                      _editSubTopic(_messages.length - 1 - idx, topicIndex, newValue),
+                  onDeleteSubTopic: (topicIndex) =>
+                      _deleteSubTopic(_messages.length - 1 - idx, topicIndex),
+                  onGenerateMoodboardPressed: msg.onGenerateMoodboardPressed,
+                  onUserDeclineMoodboard: msg.onUserDeclineMoodboard,
+                );
               },
             ),
           ),
@@ -128,23 +157,77 @@ class _ChatPageState extends State<ChatPage> {
 
     try {
       final aiResp = await ApiService.chat(text);
+
       setState(() {
         _messages.add(ChatMessage(
           text: aiResp.reply,
           fromUser: false,
           subTopics: aiResp.subTopics.isNotEmpty ? aiResp.subTopics : null,
-          visualKeywords: aiResp.visualKeywords,
         ));
       });
 
-      // mooodboard
-      if (aiResp.visualKeywords.isNotEmpty) {
-        final url = await ApiService.generateMoodboard(aiResp.visualKeywords);
+      if (aiResp.subTopics.isNotEmpty) {
         setState(() {
           _messages.add(ChatMessage(
-            text: "這是根據你想拍的主題產生的風格參考圖：",
+            text: "是否要根據主題產生風格參考圖？",
             fromUser: false,
-            moodboardUrl: url,
+            onGenerateMoodboardPressed: () async {
+              setState(() {
+                _messages.add(ChatMessage(
+                  text: "好，幫我生成！",
+                  fromUser: true,
+                ));
+              });
+
+              await Future.delayed(const Duration(milliseconds: 400));
+
+              final loadingMsg = ChatMessage(
+                text: "生成中...",
+                fromUser: false,
+              );
+              setState(() {
+                _messages.add(loadingMsg);
+              });
+
+              try {
+                final visualKeywords = await ApiService.getVisualKeywords(aiResp.subTopics);
+                final moodboardUrl = await ApiService.generateMoodboard(visualKeywords);
+
+                setState(() {
+                  _messages.remove(loadingMsg);
+                  _messages.add(ChatMessage(
+                    text: "這是根據你主題生成的風格圖參考：",
+                    fromUser: false,
+                    moodboardUrl: moodboardUrl,
+                  ));
+                });
+              } catch (e) {
+                setState(() {
+                  _messages.remove(loadingMsg);
+                  _messages.add(ChatMessage(
+                    text: '產生風格圖片錯誤：$e',
+                    fromUser: false,
+                  ));
+                });
+              }
+            },
+            onUserDeclineMoodboard: () async {
+              setState(() {
+                _messages.add(ChatMessage(
+                  text: "先不用。",
+                  fromUser: true,
+                ));
+              });
+
+              await Future.delayed(const Duration(milliseconds: 400));
+
+              setState(() {
+                _messages.add(ChatMessage(
+                  text: "好的，這次我不產生風格圖片。\n如果你之後有需要，可以再告訴我喔～",
+                  fromUser: false,
+                ));
+              });
+            },
           ));
         });
       }

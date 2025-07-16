@@ -11,52 +11,81 @@ class AuthSelectionScreen extends StatelessWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
+          // 背景圖
           Image.asset(
             'assets/images/auth_background.png',
             fit: BoxFit.cover,
           ),
-          Container(
-            // color: Colors.black.withOpacity(0.3),
-          ),
+
           Column(
-            // mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 100),
+
+              // Logo
               Image.asset(
-                    'assets/images/logo_with_title.png',
-                    width: 130,
-                    height: 130,
-                  ),
-                  const SizedBox(height: 480),
+                'assets/images/logo_with_title.png',
+                width: 130,
+                height: 130,
+              ),
+
+              const Spacer(),
+
+              // 登入
               SizedBox(
                 width: 180,
                 child: OutlinedButton(
                   onPressed: () {
                     Navigator.pushNamed(context, Routes.login);
                   },
-                  child: const Text("登入"),
                   style: OutlinedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
                     foregroundColor: Colors.white,
                     side: const BorderSide(color: Colors.white, width: 1.5),
                     padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    "登入",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
+
               const SizedBox(height: 16),
+
+              // 註冊
               SizedBox(
                 width: 180,
                 child: OutlinedButton(
                   onPressed: () {
                     Navigator.pushNamed(context, Routes.register);
                   },
-                  child: const Text("註冊"),
                   style: OutlinedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
                     foregroundColor: Colors.white,
                     side: const BorderSide(color: Colors.white, width: 1.5),
                     padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    "註冊",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
+              const SizedBox(height: 80),
             ],
           ),
         ],

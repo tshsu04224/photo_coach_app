@@ -3,8 +3,6 @@
 // 目前皆仍為假資料與沒有功能的按鈕(待實作)
 import 'package:flutter/material.dart';
 import 'widgets/bottom_nav_bar.dart';
-import 'package:provider/provider.dart';
-import '../controllers/auth_controller.dart';
 import '../routes/routes.dart';
 
 class HomePage extends StatefulWidget {
