@@ -36,24 +36,19 @@ class AnalysisResultPage extends StatefulWidget {
 }
 
 class _AnalysisResultPageState extends State<AnalysisResultPage> {
+  final ValueNotifier<bool> isFavoriteNotifier = ValueNotifier(false);
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
-
-    // 導頁
     switch (index) {
       case 0:
         Navigator.push(context, MaterialPageRoute(builder: (_) => const HomePage()));
         break;
       case 1:
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const Placeholder()));
-        break;
       case 2:
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const Placeholder()));
-        break;
       case 3:
         Navigator.push(context, MaterialPageRoute(builder: (_) => const Placeholder()));
         break;
@@ -113,27 +108,8 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Stack(
-                  alignment: Alignment.topRight,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.network(
-                        widget.imagePath,
-                        width: double.infinity,
-                        height: 300,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Icon(Icons.favorite_border, color: Colors.pinkAccent),
-                    )
-                  ],
-                ),
-              ),
+              _buildImageWithHeart(widget.imagePath),
+              const SizedBox(height: 12),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: Text(
@@ -157,12 +133,10 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    for (final line in widget.feedback) Text(line),
+                    for (final line in widget.feedback)
+                      _BulletText(line),
                     const SizedBox(height: 8),
-                    const Text(
-                      "查看完整內容",
-                      style: TextStyle(color: Colors.blue),
-                    ),
+                    const Text("查看完整內容", style: TextStyle(color: Colors.blue)),
                   ],
                 ),
               ),
@@ -170,16 +144,15 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   children: widget.techniques
                       .map((tech) => Padding(
                     padding: const EdgeInsets.only(right: 12.0),
-                    child: _iconWithText(tech['icon'], tech['label']),
+                    child: _TagButton(icon: tech['icon'], label: tech['label']),
                   ))
                       .toList(),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
             ],
           ),
         ),
@@ -187,11 +160,69 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
     );
   }
 
-  Widget _iconWithText(IconData icon, String label) {
+  Widget _buildImageWithHeart(String imageUrl) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Stack(
+        alignment: Alignment.topRight,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Image.network(
+              imageUrl,
+              width: double.infinity,
+              height: 300,
+              fit: BoxFit.cover,
+            ),
+          ),
+          ValueListenableBuilder<bool>(
+            valueListenable: isFavoriteNotifier,
+            builder: (context, isFavorite, child) {
+              return GestureDetector(
+                onTap: () => isFavoriteNotifier.value = !isFavoriteNotifier.value,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(
+                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: Colors.pinkAccent,
+                    size: 28,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BulletText extends StatelessWidget {
+  final String text;
+  const _BulletText(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 5),
+      child: Text(text, style: const TextStyle(fontSize: 15, height: 1.4)),
+    );
+  }
+}
+
+class _TagButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+
+  const _TagButton({required this.label, required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
         CircleAvatar(
           backgroundColor: Colors.grey.shade200,
+          radius: 24,
           child: Icon(icon, color: Colors.black),
         ),
         const SizedBox(height: 4),
