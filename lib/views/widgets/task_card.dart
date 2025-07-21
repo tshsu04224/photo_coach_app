@@ -3,13 +3,26 @@ import '../../models/task_model.dart';
 
 class TaskCard extends StatelessWidget {
   final Task task;
+  final Set<String>? filterTags;
 
-  const TaskCard({super.key, required this.task});
+  const TaskCard({
+    super.key,
+    required this.task,
+    this.filterTags,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final showAll = filterTags == null || filterTags!.isEmpty;
+
+    final matchedSubTasks = showAll
+        ? task.subTasks
+        : task.subTasks
+        .where((sub) => filterTags!.contains(sub.tag))
+        .toList();
+
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 4,
       child: Padding(
@@ -17,53 +30,64 @@ class TaskCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // title
-            Row(
-              children: [
-                const Icon(Icons.camera_alt, size: 20),
-                const SizedBox(width: 8),
-                Text(task.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              ],
+            // 任務標題
+            Text(
+              task.title,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 12),
 
-            // image
+            const SizedBox(height: 8),
+
+            // 任務封面圖
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Image.asset(
                 task.imageAssetPath,
+                height: 160,
+                width: double.infinity,
                 fit: BoxFit.cover,
               ),
             ),
+
             const SizedBox(height: 12),
 
-            // description
-            Text(task.description, style: TextStyle(color: Colors.grey[800], fontSize: 14)),
-            const SizedBox(height: 16),
-
-            // Checklist
-            ...task.subTasks.map((subTask) => _buildSubTask(subTask)).toList(),
+            // 子任務區塊
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: matchedSubTasks.map((sub) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    children: [
+                      Icon(
+                        sub.isCompleted
+                            ? Icons.check_circle
+                            : Icons.radio_button_unchecked,
+                        color: sub.isCompleted
+                            ? const Color(0xFF4A749E)
+                            : Colors.grey,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(sub.content,
+                            style: const TextStyle(fontSize: 14)),
+                      ),
+                      const SizedBox(width: 6),
+                      Chip(
+                        label: Text(sub.tag,
+                            style: const TextStyle(fontSize: 12)),
+                        backgroundColor: Colors.grey[200],
+                        padding: EdgeInsets.zero,
+                        visualDensity: VisualDensity.compact,
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildSubTask(SubTask subTask) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        children: [
-          Icon(
-            subTask.isCompleted ? Icons.check_circle : Icons.radio_button_unchecked,
-            color: subTask.isCompleted ? Colors.green : Colors.grey,
-            size: 20,
-          ),
-          const SizedBox(width: 8),
-          Icon(subTask.icon, size: 18),
-          const SizedBox(width: 8),
-          Expanded(child: Text(subTask.content)),
-        ],
       ),
     );
   }

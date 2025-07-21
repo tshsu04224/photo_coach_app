@@ -18,6 +18,21 @@ class TaskController extends ChangeNotifier {
     return _mockTasks[formatted] ?? [];
   }
 
+  List<Task> get allTasks =>
+      _mockTasks.values.expand((taskList) => taskList).toList();
+
+  bool hasTaskOnDate(DateTime date) {
+    final key = _formatDate(date);
+    return _mockTasks.containsKey(key) && _mockTasks[key]!.isNotEmpty;
+  }
+
+  List<Task> tasksByCategory(String tag) {
+    return _mockTasks.values
+        .expand((taskList) => taskList)
+        .where((task) => task.subTasks.any((sub) => sub.tag == tag))
+        .toList();
+  }
+
   String _formatDate(DateTime date) {
     return "${date.year}-${_twoDigits(date.month)}-${_twoDigits(date.day)}";
   }
@@ -26,26 +41,35 @@ class TaskController extends ChangeNotifier {
 
   /// mock data
   final Map<String, List<Task>> _mockTasks = {
-    "2025-05-07": [
+    "2025-07-21": [
       Task(
         title: '日本街景',
         description: '拍攝一張帶有濃厚日系氛圍的街道畫面…',
         imageAssetPath: 'assets/images/japan_street.jpeg',
         subTasks: [
-          SubTask(icon: Icons.electrical_services, content: '拍攝電線桿與交錯的電線構成的畫面', isCompleted: false),
-          SubTask(icon: Icons.local_convenience_store, content: '捕捉便利商店或自動販賣機所在的街角', isCompleted: true),
-          SubTask(icon: Icons.straighten, content: '使用對角線或引導線構圖呈現街道延伸感', isCompleted: true),
+          SubTask(icon: Icons.electrical_services, content: '拍攝電線桿與交錯的電線構成的畫面', tag: '街拍', isCompleted: false),
+          SubTask(icon: Icons.local_convenience_store, content: '捕捉便利商店或自動販賣機所在的街角',tag: '風景', isCompleted: true),
+          SubTask(icon: Icons.straighten, content: '使用對角線或引導線構圖呈現街道延伸感', tag: '街拍', isCompleted: true),
         ],
       ),
-    ],
-    "2025-05-08": [
       Task(
         title: '咖啡店角落',
         description: '捕捉一張充滿氛圍的咖啡店畫面',
         imageAssetPath: 'assets/images/cafe_corner.jpeg',
         subTasks: [
-          SubTask(icon: Icons.local_cafe, content: '拍攝咖啡與桌面擺設', isCompleted: false),
-          SubTask(icon: Icons.wb_sunny, content: '利用自然光拍攝窗邊座位', isCompleted: false),
+          SubTask(icon: Icons.local_cafe, content: '拍攝咖啡與桌面擺設', tag: '靜物', isCompleted: false),
+          SubTask(icon: Icons.wb_sunny, content: '利用自然光拍攝窗邊座位', tag: '人像', isCompleted: false),
+        ],
+      ),
+    ],
+    "2025-07-22": [
+      Task(
+        title: '咖啡店角落',
+        description: '捕捉一張充滿氛圍的咖啡店畫面',
+        imageAssetPath: 'assets/images/cafe_corner.jpeg',
+        subTasks: [
+          SubTask(icon: Icons.local_cafe, content: '拍攝咖啡與桌面擺設',tag: '靜物', isCompleted: false),
+          SubTask(icon: Icons.wb_sunny, content: '利用自然光拍攝窗邊座位',tag: '靜物', isCompleted: false),
         ],
       ),
     ],

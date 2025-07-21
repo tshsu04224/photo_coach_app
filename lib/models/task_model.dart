@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class SubTask {
   final IconData icon;
   final String content;
+  final String tag;
   bool isCompleted;
 
   SubTask({
     required this.icon,
     required this.content,
+    required this.tag,
     this.isCompleted = false,
   });
 }

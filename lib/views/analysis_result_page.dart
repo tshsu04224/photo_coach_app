@@ -98,9 +98,9 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (_) => const Placeholder()));
         },
-        child: const Icon(Icons.camera_alt),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
+        child: const Icon(Icons.camera_alt),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: SafeArea(

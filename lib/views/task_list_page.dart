@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import 'widgets/week_day_selector.dart';
 import '../controllers/task_controller.dart';
 import '../views/widgets/task_card.dart';
-import '../views/widgets/bottom_nav_bar.dart'; // 你自訂的
+import '../views/widgets/bottom_nav_bar.dart';
+
 
 class TaskListPage extends StatelessWidget {
   const TaskListPage({super.key});
@@ -40,9 +42,35 @@ class TaskListPage extends StatelessWidget {
                     ),
                     Expanded(
                       child: Center(
-                        child: Text(
-                          "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}",
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                        child: GestureDetector(
+                          onTap: () async {
+                            final DateTime? picked = await showDatePicker(
+                              context: context,
+                              initialDate: selectedDate,
+                              firstDate: DateTime(2020),
+                              lastDate: DateTime(2030),
+                              builder: (context, child) {
+                                return Theme(
+                                  data: Theme.of(context).copyWith(
+                                    colorScheme: const ColorScheme.light(
+                                      primary: Color(0xFF4A749E),
+                                      onPrimary: Colors.white,
+                                      onSurface: Colors.black,
+                                    ),
+                                  ),
+                                  child: child!,
+                                );
+                              },
+                            );
+
+                            if (picked != null) {
+                              taskController.setSelectedDate(picked);
+                            }
+                          },
+                          child: Text(
+                            "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}",
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey),
+                          ),
                         ),
                       ),
                     ),
