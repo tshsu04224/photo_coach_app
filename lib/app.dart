@@ -1,5 +1,6 @@
 // 整個app的整體主架構邏輯設計
 import 'package:flutter/material.dart';
+import 'package:photo_coach/views/main_page.dart';
 import 'package:provider/provider.dart';
 import 'controllers/auth_controller.dart';
 import 'routes/routes.dart'; // Make sure this file exports a 'Routes' class or object with the required route names
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
               Routes.login: (_) => const LoginPage(),
               Routes.register: (_) => const RegisterPage(),
               Routes.registerPreferences: (_) => const RegisterPreferencePage(),
-              Routes.home: (_) => const HomePage(),
+              Routes.home: (_) => const MainPage(),
               Routes.chat: (_) => const ChatPage(),
             },
           );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:photo_coach/themes/app_theme.dart';
 import '../models/chat_message.dart';
 import 'widgets/chat_bubble.dart';
+import 'widgets/capture_sheet.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -79,7 +80,12 @@ class _ChatPageState extends State<ChatPage> {
                   IconButton(
                     icon: const Icon(Icons.image_outlined),
                     color: Colors.grey.shade600,
-                    onPressed: () {},
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (_) => const CaptureSheet(),
+                      );
+                    },
                   ),
                   // 只有這一塊是灰色圓角
                   Expanded(
