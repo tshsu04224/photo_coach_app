@@ -42,7 +42,10 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(height: 24),
-              const Text("登入", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+              const Text(
+                "登入",
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 6),
               const Text("請輸入信箱以登入", style: TextStyle(color: Colors.grey)),
               const SizedBox(height: 24),
@@ -59,7 +62,9 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: InputDecoration(
                   labelText: '密碼',
                   suffixIcon: IconButton(
-                    icon: Icon(_isObscured ? Icons.visibility_off : Icons.visibility),
+                    icon: Icon(
+                      _isObscured ? Icons.visibility_off : Icons.visibility,
+                    ),
                     onPressed: () {
                       setState(() {
                         _isObscured = !_isObscured;
@@ -74,7 +79,10 @@ class _LoginPageState extends State<LoginPage> {
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () {}, // 忘記密碼尚未實作
-                  child: const Text("忘記密碼？", style: TextStyle(color: Colors.blue)),
+                  child: const Text(
+                    "忘記密碼？",
+                    style: TextStyle(color: Colors.blue),
+                  ),
                 ),
               ),
 
@@ -95,25 +103,35 @@ class _LoginPageState extends State<LoginPage> {
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  onPressed: _isLoading ? null : () async {
-                    setState(() {
-                      _isLoading = true;
-                      _errorMessage = null;
-                    });
-                    bool success = await auth.login(
-                      _emailController.text.trim(),
-                      _passwordController.text.trim(),
-                    );
-                    setState(() => _isLoading = false);
+                  onPressed: _isLoading
+                      ? null
+                      : () async {
+                          setState(() {
+                            _isLoading = true;
+                            _errorMessage = null;
+                          });
+                          bool success = await auth.login(
+                            _emailController.text.trim(),
+                            _passwordController.text.trim(),
+                          );
+                          setState(() => _isLoading = false);
 
-                    if (success) {
-                      Navigator.pushReplacementNamed(context, Routes.home);
-                    } else {
-                      setState(() => _errorMessage = '帳號或密碼錯誤');
-                    }
-                  },
+                          if (success) {
+                            if (!mounted) return;
+                            Navigator.pushReplacementNamed(
+                              context,
+                              Routes.home,
+                            );
+                          } else {
+                            setState(() => _errorMessage = '帳號或密碼錯誤');
+                          }
+                        },
                   child: _isLoading
-                      ? const SizedBox(height: 25, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                      ? const SizedBox(
+                          height: 25,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : const Text("登入"),
                 ),
               ),
@@ -150,7 +168,10 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         Navigator.pushNamed(context, Routes.register);
                       },
-                      child: const Text("註冊", style: TextStyle(color: Colors.blue)),
+                      child: const Text(
+                        "註冊",
+                        style: TextStyle(color: Colors.blue),
+                      ),
                     ),
                   ],
                 ),

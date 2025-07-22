@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-  import '../services/analytics_service.dart';
+import 'package:logger/logger.dart';
+import '../services/analytics_service.dart';
 
 class AnalyzeController extends ChangeNotifier {
+  final Logger _logger = Logger();
   bool isLoading = false;
   File? analyzedImage;
   String? highlight, suggestion, tip, challenge;
@@ -18,7 +20,7 @@ class AnalyzeController extends ChangeNotifier {
 
       // 分析圖片
       final result = await AnalyzeService.analyzeImageBytes(imageBytes);
-      print("分析結果：$result");
+      _logger.i("分析結果：$result");
       if (result['status'] == 'success') {
         final data = result['data'];
         highlight = data['highlight'];
@@ -26,10 +28,10 @@ class AnalyzeController extends ChangeNotifier {
         tip = data['tip'];
         suggestion = data['suggestion'];
       } else {
-        print("分析失敗：${result['message']}");
+        _logger.w("分析失敗：${result['message']}");
       }
     } catch (e) {
-      print("錯誤：$e");
+      _logger.e("錯誤：$e");
     } finally {
       isLoading = false;
       notifyListeners();

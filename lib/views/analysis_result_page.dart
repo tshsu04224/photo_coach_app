@@ -8,7 +8,7 @@ class AnalysisResultPage extends StatefulWidget {
   const AnalysisResultPage({super.key});
 
   @override
-  _AnalysisResultPageState createState() => _AnalysisResultPageState();
+  State<AnalysisResultPage> createState() => _AnalysisResultPageState();
 }
 
 class _AnalysisResultPageState extends State<AnalysisResultPage> {
@@ -191,18 +191,18 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
   }
 }
 
-class _BulletText extends StatelessWidget {
-  final String text;
-  const _BulletText(this.text);
+// class _BulletText extends StatelessWidget {
+//   final String text;
+//   const _BulletText(this.text);
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 5),
-      child: Text(text, style: TextStyle(fontSize: 15, height: 1.4)),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Padding(
+//       padding: const EdgeInsets.only(bottom: 5),
+//       child: Text(text, style: TextStyle(fontSize: 15, height: 1.4)),
+//     );
+//   }
+// }
 
 class _TagButton extends StatelessWidget {
   final String label;
