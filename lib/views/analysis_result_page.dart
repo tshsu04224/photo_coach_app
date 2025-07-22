@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:photo_coach/controllers/analyze_controller.dart';
+import 'package:provider/provider.dart';
 
 class AnalysisResultPage extends StatefulWidget {
   const AnalysisResultPage({super.key});
@@ -45,6 +49,8 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
               // ),
               const SizedBox(height: 16),
               _buildTagButtons(),
+              const SizedBox(height: 16),
+              _buildApiTestButton(),
             ],
           ),
         ),
@@ -53,6 +59,8 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
   }
 
   Widget _buildImageWithGridAndHeart() {
+    final controller = context.watch<AnalyzeController>();
+    final imageFile = controller.analyzedImage;
     return FutureBuilder(
       future: Future.delayed(const Duration(milliseconds: 100)), // 模擬非同步延遲
       builder: (context, snapshot) {
@@ -64,16 +72,21 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
         }
         return Center(
           child: Stack(
-            clipBehavior: Clip.none, 
+            clipBehavior: Clip.none,
             children: [
               // 主圖片
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: SizedBox(
                   height: 300,
-                  child: Image.asset(
-                    'assets/images/analysis_result_sample.png',
-                    fit: BoxFit.cover,
+                  child: SizedBox(
+                    height: 300,
+                    child: imageFile != null
+                        ? Image.file(imageFile, fit: BoxFit.cover) // ✅ 使用使用者圖片
+                        : Image.asset(
+                            'assets/images/analysis_result_sample.png',
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 ),
               ),
@@ -98,7 +111,8 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                 right: 10,
                 child: GestureDetector(
                   onTap: () {
-                    isFavoriteNotifier.value = !isFavoriteNotifier.value; // 更新狀態
+                    isFavoriteNotifier.value =
+                        !isFavoriteNotifier.value; // 更新狀態
                   },
                   child: ValueListenableBuilder<bool>(
                     valueListenable: isFavoriteNotifier,
@@ -123,13 +137,27 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
   }
 
   Widget _buildBulletPoints() {
-    return const Column(
+    final controller = context.watch<AnalyzeController>();
+    if (controller.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _BulletText("📌 主體落點穩定\n滑雪者位於三分交點，構圖自然、重點明確。"),
-        _BulletText("📏 鏡頭對準垂線\n背後電線桿落在右側三分線上，構圖整齊，有秩序感。"),
-        _BulletText("🎨 色彩對比強烈\n紅黑服裝在白雪中醒眼，主體聚焦清晰。"),
-        _BulletText("🌫️ 氛圍明確\n白雪與霧氣，營造寒冷與寧靜的空間感。"),
+        Text("📸 拍攝亮點", style: TextStyle(fontWeight: FontWeight.bold)),
+        Text(controller.highlight ?? '尚未分析'),
+
+        SizedBox(height: 8),
+        Text("🎯 改進建議", style: TextStyle(fontWeight: FontWeight.bold)),
+        Text(controller.suggestion ?? '尚未分析'),
+
+        SizedBox(height: 8),
+        Text("🧠 學習提示", style: TextStyle(fontWeight: FontWeight.bold)),
+        Text(controller.tip ?? '尚未分析'),
+
+        SizedBox(height: 8),
+        Text("💡 建議任務挑戰", style: TextStyle(fontWeight: FontWeight.bold)),
+        Text(controller.challenge ?? '尚未分析'),
       ],
     );
   }
@@ -142,6 +170,23 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
         _TagButton(label: '色彩對比', icon: Icons.palette),
         _TagButton(label: '多層構圖', icon: Icons.layers),
       ],
+    );
+  }
+
+  // 按鈕觸發API測試
+  Widget _buildApiTestButton() {
+    return ElevatedButton(
+      onPressed: () async {
+        final controller = context.read<AnalyzeController>();
+        final picker = ImagePicker();
+        final picked = await picker.pickImage(source: ImageSource.gallery);
+
+        if (picked != null) {
+          final file = File(picked.path);
+          controller.analyze(file);
+        }
+      },
+      child: Text("分析照片"),
     );
   }
 }
