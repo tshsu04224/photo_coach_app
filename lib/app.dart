@@ -10,7 +10,6 @@ import 'views/auth/auth_selection_screen.dart';
 import 'views/auth/login_page.dart';
 import 'views/auth/register_page.dart';
 import 'views/auth/register_preference_page.dart';
-import 'views/home_page.dart';
 import 'views/task_list_page.dart';
 
 class MyApp extends StatelessWidget {

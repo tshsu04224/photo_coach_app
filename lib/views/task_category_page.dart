@@ -18,9 +18,8 @@ class _TaskCategoryPageState extends State<TaskCategoryPage> {
   @override
   Widget build(BuildContext context) {
     final taskController = Provider.of<TaskController>(context);
-    final allTasks = taskController.allTasks; // 所有任務展平
+    final allTasks = taskController.allTasks;
 
-    // 篩選任務：任務中有任一子任務標籤符合選中分類
     final filteredTasks = selectedTags.isEmpty
         ? allTasks
         : allTasks.where((task) {

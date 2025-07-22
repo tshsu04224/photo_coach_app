@@ -3,11 +3,11 @@ import '../models/task_model.dart';
 
 class TaskController extends ChangeNotifier {
 
-  DateTime _selectedDate = DateTime.now(); ///default
+  DateTime _selectedDate = DateTime.now(); // default
 
   DateTime get selectedDate => _selectedDate;
 
-  /// switch date
+  // switch date
   void setSelectedDate(DateTime date) {
     _selectedDate = date;
     notifyListeners();
@@ -39,7 +39,7 @@ class TaskController extends ChangeNotifier {
 
   String _twoDigits(int n) => n.toString().padLeft(2, '0');
 
-  /// mock data
+  // mock data
   final Map<String, List<Task>> _mockTasks = {
     "2025-07-21": [
       Task(

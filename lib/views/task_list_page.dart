@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 import 'widgets/week_day_selector.dart';
 import '../controllers/task_controller.dart';
 import '../views/widgets/task_card.dart';
@@ -105,7 +104,7 @@ class TaskListPage extends StatelessWidget {
           bottomNavigationBar: BottomNavBar(
             currentIndex: 0,
             onTap: (index) {
-              // 根據 index 切換頁面（可日後拓展）
+              // 根據 index 切換頁面
               if (index == 0) {
                 // stay
               }

@@ -17,7 +17,7 @@ class SubTask {
 class Task {
   final String title;
   final String description;
-  final String imageAssetPath; // for mocking, will change to imageUrl later
+  final String imageAssetPath; // mock, will change to imageUrl later
   final List<SubTask> subTasks;
 
   Task({

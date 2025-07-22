@@ -23,7 +23,6 @@ class _WeekDaySelectorState extends State<WeekDaySelector> {
     final taskController = Provider.of<TaskController>(context);
     final selectedDate = taskController.selectedDate;
 
-    // 中心為 selectedDate，左右各 7 天，共 14 天
     final startDate = selectedDate.subtract(const Duration(days: 7));
     final dateList = List.generate(14, (i) => startDate.add(Duration(days: i)));
 
