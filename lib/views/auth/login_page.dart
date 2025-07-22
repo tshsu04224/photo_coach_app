@@ -18,10 +18,31 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   String? _errorMessage;
 
+  Future<void> _handleLogin() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    final auth = Provider.of<AuthController>(context, listen: false);
+    final success = await auth.login(
+      _emailController.text.trim(),
+      _passwordController.text.trim(),
+    );
+
+    if (!mounted) return;
+
+    setState(() => _isLoading = false);
+
+    if (success) {
+      Navigator.pushReplacementNamed(context, Routes.home);
+    } else {
+      setState(() => _errorMessage = '帳號或密碼錯誤');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthController>(context, listen: false);
-
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -103,29 +124,7 @@ class _LoginPageState extends State<LoginPage> {
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  onPressed: _isLoading
-                      ? null
-                      : () async {
-                          setState(() {
-                            _isLoading = true;
-                            _errorMessage = null;
-                          });
-                          bool success = await auth.login(
-                            _emailController.text.trim(),
-                            _passwordController.text.trim(),
-                          );
-                          setState(() => _isLoading = false);
-
-                          if (success) {
-                            if (!mounted) return;
-                            Navigator.pushReplacementNamed(
-                              context,
-                              Routes.home,
-                            );
-                          } else {
-                            setState(() => _errorMessage = '帳號或密碼錯誤');
-                          }
-                        },
+                  onPressed: _isLoading ? null : _handleLogin,
                   child: _isLoading
                       ? const SizedBox(
                           height: 25,
