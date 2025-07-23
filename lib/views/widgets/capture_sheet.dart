@@ -54,6 +54,7 @@ class ImagePreviewPage extends StatefulWidget {
 
   @override
   State<ImagePreviewPage> createState() => _ImagePreviewPageState();
+  
 }
 
 class _ImagePreviewPageState extends State<ImagePreviewPage> {
