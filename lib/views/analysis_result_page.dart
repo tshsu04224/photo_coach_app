@@ -71,7 +71,7 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                 child: SizedBox(
                   height: 300,
                   child: imageFile != null
-                      ? Image.file(imageFile!, fit: BoxFit.cover)
+                      ? Image.file(imageFile, fit: BoxFit.cover)
                       : Container(
                           height: 300,
                           color: Colors.grey[200],
