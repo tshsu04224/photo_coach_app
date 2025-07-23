@@ -1,13 +1,14 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:photo_coach/services/analytics_service.dart';
 import 'package:logger/logger.dart';
-import '../services/analytics_service.dart';
+
+final _logger = Logger();
 
 class AnalyzeController extends ChangeNotifier {
-  final Logger _logger = Logger();
   bool isLoading = false;
   File? analyzedImage;
-  String? highlight, suggestion, tip, challenge;
+  String? highlight, suggestion, tip, challenge, ai_score;
 
   Future<void> analyze(File file) async {
     isLoading = true;
@@ -15,26 +16,34 @@ class AnalyzeController extends ChangeNotifier {
 
     try {
       analyzedImage = file;
-      // 直接讀取圖片的 bytes
-      final imageBytes = await file.readAsBytes();
 
-      // 分析圖片
-      final result = await AnalyzeService.analyzeImageBytes(imageBytes);
+      // 將耗時操作移至 compute 中執行
+      final result = await compute(_analyzeInBackground, file.path);
+
       _logger.i("分析結果：$result");
-      if (result['status'] == 'success') {
-        final data = result['data'];
-        highlight = data['highlight'];
-        challenge = data['challenge'];
-        tip = data['tip'];
-        suggestion = data['suggestion'];
+
+      if (result['content_analysis'] != null) {
+        final data = result['content_analysis'];
+        highlight = data['highlight'] ?? '未提供';
+        challenge = data['challenge'] ?? '未提供';
+        tip = data['tip'] ?? '未提供';
+        suggestion = data['suggestion'] ?? '未提供';
+        ai_score = data['ai_score'] ?? '0.0';
       } else {
-        _logger.w("分析失敗：${result['message']}");
+        _logger.w("分析結果格式錯誤：$result");
       }
     } catch (e) {
-      _logger.e("錯誤：$e");
+      _logger.e("分析過程發生錯誤：$e");
     } finally {
       isLoading = false;
       notifyListeners();
     }
   }
+}
+
+Future<Map<String, dynamic>> _analyzeInBackground(String filePath) async {
+  final file = File(filePath);
+  final imageBytes = await file.readAsBytes();
+  final result = await AnalyzeService.analyzeImageBytes(imageBytes);
+  return result;
 }
