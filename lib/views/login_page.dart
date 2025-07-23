@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -22,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Logo and title
+              // Page title
               Row(
                 children: [
                   Image.asset(
@@ -84,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 8),
 
-              // Forgot password link
+              // Forgot password
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
@@ -108,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 24),
 
-              // Or divider
+              // Divider
               Row(
                 children: const [
                   Expanded(child: Divider()),

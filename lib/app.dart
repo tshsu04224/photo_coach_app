@@ -11,7 +11,8 @@ import 'views/auth/register_page.dart';
 import 'views/auth/register_preference_page.dart';
 import 'package:photo_coach/views/chat_page.dart';
 import 'themes/app_theme.dart';
-import 'views/chat_page.dart';
+import 'views/home_page.dart';
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -36,10 +37,8 @@ class MyApp extends StatelessWidget {
               Routes.register: (_) => const RegisterPage(),
               Routes.registerPreferences: (_) => const RegisterPreferencePage(),
               Routes.home: (_) => const MainPage(),
+              Routes.home: (_) => const HomePage(),
               Routes.chat: (_) => const ChatPage(),
-            },
-          );
-        },
       ),
     );
   }
