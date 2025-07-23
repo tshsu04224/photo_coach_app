@@ -125,7 +125,7 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
         const Text("AI的評分", style: TextStyle(fontSize: 14, color: Colors.grey)),
         const SizedBox(width: 4),
         const Icon(Icons.star, color: Colors.orange, size: 16),
-        Text(controller.ai_score ?? '', style: const TextStyle(fontSize: 14)),
+        Text(controller.score ?? '', style: const TextStyle(fontSize: 14)),
       ],
     );
   }

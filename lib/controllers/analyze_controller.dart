@@ -8,7 +8,7 @@ final _logger = Logger();
 class AnalyzeController extends ChangeNotifier {
   bool isLoading = false;
   File? analyzedImage;
-  String? highlight, suggestion, tip, challenge, ai_score;
+  String? highlight, suggestion, tip, challenge, score;
 
   Future<void> analyze(File file) async {
     isLoading = true;
@@ -28,7 +28,7 @@ class AnalyzeController extends ChangeNotifier {
         challenge = data['challenge'] ?? '未提供';
         tip = data['tip'] ?? '未提供';
         suggestion = data['suggestion'] ?? '未提供';
-        ai_score = data['ai_score'] ?? '0.0';
+        score = data['ai_score'] ?? '0.0';
       } else {
         _logger.w("分析結果格式錯誤：$result");
       }
