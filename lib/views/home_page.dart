@@ -2,8 +2,6 @@
 // 這個頁面會顯示使用者的頭像、拍攝任務按鈕、功能目錄、今日任務與近期作品...
 // 目前皆仍為假資料與沒有功能的按鈕(待實作)
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../controllers/auth_controller.dart';
 import '../routes/routes.dart';
 
 class HomePage extends StatefulWidget {
@@ -30,7 +28,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -184,6 +181,61 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _functionIcon(IconData icon, String label) {
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: 28,
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          child: Icon(icon, size: 28),
+        ),
+        const SizedBox(height: 6),
+        Text(label, style: const TextStyle(fontSize: 12)),
+      ],
+    );
+  }
+
+  Widget _photoCard(String title, String subtitle, bool liked, {required String imagePath}) {
+    return Container(
+      width: 120,
+      margin: const EdgeInsets.only(right: 12),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.asset(
+                  imagePath,
+                  width: double.infinity,
+                  height: 80,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              if (liked)
+                const Positioned(
+                  top: 6,
+                  right: 6,
+                  child: Icon(Icons.favorite, color: Colors.black),
+                ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(subtitle, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+        ],
       ),
     );
   }
