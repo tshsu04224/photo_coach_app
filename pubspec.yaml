@@ -43,6 +43,7 @@ dependencies:
   http: ^0.13.6             # For making HTTP requests
   image_picker: ^1.0.0     # For picking images from the gallery or camera
   flutter_image_compress: ^2.1.0 # For compressing images before uploading
+  logger: ^2.6.1
 
 dev_dependencies:
   flutter_test:

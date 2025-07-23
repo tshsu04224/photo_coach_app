@@ -13,7 +13,8 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      return AIChatResponse.fromJson(jsonDecode(response.body));
+      final decoded = utf8.decode(response.bodyBytes);
+      return AIChatResponse.fromJson(jsonDecode(decoded));
     } else {
       throw Exception('AI 回覆失敗：${response.statusCode} ${response.body}');
     }
@@ -21,7 +22,7 @@ class ApiService {
 
   static Future<String> generateMoodboard(List<String> keywords) async {
     final response = await http.post(
-      Uri.parse('http://127.0.0.1:8000/moodboard/generate'),
+      Uri.parse('$_baseUrl/moodboard/generate'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'keywords': keywords}),
     );
