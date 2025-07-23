@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'controllers/auth_controller.dart';
 import 'routes/routes.dart'; // Make sure this file exports a 'Routes' class or object with the required route names
 import 'state_management/providers.dart';
-import 'views/home_page.dart';
 import 'views/auth/auth_selection_screen.dart';
 import 'views/auth/login_page.dart';
 import 'views/auth/register_page.dart';

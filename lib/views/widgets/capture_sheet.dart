@@ -109,14 +109,14 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
           Image.file(widget.imageFile),
           const SizedBox(height: 24),
           _isUploading
-              ? const CircularProgressIndicator()
-              : ElevatedButton.icon(
-                  onPressed: _uploadImage,
-                  icon: const Icon(Icons.save),
-                  label: const Text("儲存"),
-                ),
-        ],
-      ),
-    );
+          ? const CircularProgressIndicator()
+          : ElevatedButton.icon(
+              onPressed: _uploadImage,
+              icon: const Icon(Icons.save),
+              label: const Text("儲存"),
+            ),
+          ],
+        ),
+      );
+    }
   }
-}

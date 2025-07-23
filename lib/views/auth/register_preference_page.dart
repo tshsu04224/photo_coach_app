@@ -1,7 +1,6 @@
 // 註冊
 // 這個頁面是用來讓使用者填寫個人偏好設定的
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../routes/routes.dart';
 
 class RegisterPreferencePage extends StatefulWidget {
