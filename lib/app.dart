@@ -1,5 +1,6 @@
 // 整個app的整體主架構邏輯設計
 import 'package:flutter/material.dart';
+import 'package:photo_coach/views/home_page.dart';
 import 'package:provider/provider.dart';
 import 'package:photo_coach/views/chat_page.dart';
 import 'controllers/auth_controller.dart';
@@ -10,7 +11,6 @@ import 'views/auth/auth_selection_screen.dart';
 import 'views/auth/login_page.dart';
 import 'views/auth/register_page.dart';
 import 'views/auth/register_preference_page.dart';
-import 'views/task_list_page.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
               Routes.login: (_) => const LoginPage(),
               Routes.register: (_) => const RegisterPage(),
               Routes.registerPreferences: (_) => const RegisterPreferencePage(),
-              Routes.home: (_) => const ChatPage(),
+              Routes.home: (_) => const HomePage(),
               Routes.chat: (_) => const ChatPage(),
             },
           );

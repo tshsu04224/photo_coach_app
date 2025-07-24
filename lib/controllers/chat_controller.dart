@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../models/chat_message.dart';
 import '../services/api_service.dart';
 import '../controllers/task_controller.dart';
-import '../models/task_model.dart';
 import '../views/generated_tasks_page.dart';
 
 class ChatController extends ChangeNotifier {
@@ -112,6 +111,10 @@ class ChatController extends ChangeNotifier {
       },
       onUserDeclineTasks: () {
         _addMessage(ChatMessage(text: "先不用，謝謝", fromUser: true));
+        _addMessage(ChatMessage(
+          text: "好的，這次我不產生任務。\n如果你之後有需要，可以再告訴我喔～",
+          fromUser: false,
+        ));
       },
     ));
   }
