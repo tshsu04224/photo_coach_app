@@ -2,7 +2,6 @@
 // 這個頁面會顯示使用者的頭像、拍攝任務按鈕、功能目錄、今日任務與近期作品...
 // 目前皆仍為假資料與沒有功能的按鈕(待實作)
 import 'package:flutter/material.dart';
-import 'widgets/bottom_nav_bar.dart';
 import '../routes/routes.dart';
 
 class HomePage extends StatefulWidget {
@@ -29,21 +28,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-            // 你可以根據 index 導向其他頁面
-          });
-        },
-      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -77,7 +66,12 @@ class _HomePageState extends State<HomePage> {
               Center(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.pushNamed(context, Routes.chat);
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return _buildTaskChoiceDialog(context);
+                      },
+                    );
                   },
                   icon: const Icon(Icons.camera_alt),
                   label: const Text("開始拍攝任務"),
@@ -242,6 +236,82 @@ class _HomePageState extends State<HomePage> {
           Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
           Text(subtitle, style: const TextStyle(fontSize: 12, color: Colors.grey)),
         ],
+      ),
+    );
+  }
+
+  // 拍攝任務選擇框
+  Widget _buildTaskChoiceDialog(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const SizedBox(width: 24),
+                const Text("今天我想要...", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // 建立主題按鈕
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.pop(context); // 關閉 dialog
+                Navigator.pushNamed(context, Routes.chat); // 導向聊天室
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+                side: const BorderSide(color: Colors.black, width: 1),
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              icon: Container(
+                decoration: const BoxDecoration(
+                  color: Color(0xFF5B7DB1),
+                  shape: BoxShape.circle,
+                ),
+                padding: const EdgeInsets.all(6),
+                child: const Icon(Icons.add, color: Colors.white, size: 20),
+              ),
+              label: const Text("建立主題", style: TextStyle(fontSize: 14)),
+            ),
+            const SizedBox(height: 16),
+
+            // GPS推薦按鈕
+            ElevatedButton.icon(
+              onPressed: () {
+                // TODO: 導向 GPS 推薦
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+                side: const BorderSide(color: Colors.black, width: 1),
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              icon: Container(
+                decoration: const BoxDecoration(
+                  color: Color(0xFF5B7DB1),
+                  shape: BoxShape.circle,
+                ),
+                padding: const EdgeInsets.all(6),
+                child: const Icon(Icons.place, color: Colors.white, size: 20),
+              ),
+              label: const Text("GPS推薦", style: TextStyle(fontSize: 14)),
+            ),
+          ],
+        ),
       ),
     );
   }

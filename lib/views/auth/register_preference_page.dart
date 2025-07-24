@@ -103,7 +103,7 @@ class _RegisterPreferencePageState extends State<RegisterPreferencePage> {
                             label: Text(tag),
                             selected: selected,
                             onSelected: (_) => _togglePreference(tag),
-                            selectedColor: const Color(0xFF4A749E).withOpacity(0.2),
+                            selectedColor: const Color(0x334A749E),
                             checkmarkColor: const Color(0xFF4A749E),
                             labelStyle: TextStyle(
                               color: selected ? const Color(0xFF4A749E) : Colors.black,
@@ -137,7 +137,7 @@ class _RegisterPreferencePageState extends State<RegisterPreferencePage> {
                       }).toList(),
                     ),
                     const SizedBox(height: 16),
-
+                    
                     const Text("提醒時間"),
                     TextButton.icon(
                       onPressed: _pickTime,

@@ -6,6 +6,7 @@ import 'controllers/auth_controller.dart';
 import 'controllers/task_controller.dart';
 import 'controllers/chat_controller.dart';
 import 'app.dart';
+import 'state_management/providers.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

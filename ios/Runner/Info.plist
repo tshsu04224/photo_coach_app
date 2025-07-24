@@ -45,5 +45,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
+	<key>NSCameraUsageDescription</key>
+	<string>需要使用相機來拍攝照片</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>需要存取相簿來選擇照片</string>
+
 </dict>
 </plist>
