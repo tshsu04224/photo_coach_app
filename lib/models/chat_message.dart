@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ChatMessage {
   final String text;
-  final bool fromUser; // true = 使用者, false = AI （誰發訊息）
+  final bool fromUser;
   final List<String>? subTopics;
   final List<String>? visualKeywords;
   final String? moodboardUrl;
@@ -10,6 +10,9 @@ class ChatMessage {
   final void Function(int index, String newValue)? onEditSubTopic;
   final void Function(int index)? onDeleteSubTopic;
   final VoidCallback? onUserDeclineMoodboard;
+  final Map<String, dynamic>? taskGroup;
+  final VoidCallback? onGenerateTasksPressed;
+  final VoidCallback? onUserDeclineTasks;
 
   ChatMessage({
     required this.text,
@@ -21,5 +24,8 @@ class ChatMessage {
     this.onEditSubTopic,
     this.onDeleteSubTopic,
     this.onUserDeclineMoodboard,
+    this.taskGroup,
+    this.onGenerateTasksPressed,
+    this.onUserDeclineTasks,
   });
 }
