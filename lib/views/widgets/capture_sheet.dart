@@ -4,9 +4,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:logger/logger.dart';
 
 class CaptureSheet extends StatelessWidget {
-  const CaptureSheet({super.key});
+  const CaptureSheet({super.key}); // Removed const constructor
 
   Future<void> _pickImage(BuildContext context, ImageSource source) async {
     final picker = ImagePicker();
@@ -14,9 +15,10 @@ class CaptureSheet extends StatelessWidget {
     if (pickedFile != null) {
       final image = File(pickedFile.path);
 
+      if (!context.mounted) return;
       Navigator.pop(context); // 關閉 bottom sheet
 
-      // 跳轉到預覽頁或儲存頁
+      if (!context.mounted) return;
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -62,6 +64,8 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
   final String topic = "建築"; // 替換真實主題
   final String uploadUrl = "http://172.20.10.5:8000/api/photo/upload"; // 替換實際網址
 
+  final Logger _logger = Logger(); // Initialize Logger
+
   Future<void> _uploadImage() async {
     setState(() {
       _isUploading = true;
@@ -81,25 +85,27 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
     final response = await request.send();
     final responseBody = await response.stream.bytesToString();
 
+    if (!mounted) return; 
+    
     setState(() {
       _isUploading = false;
     });
 
     if (response.statusCode == 200) {
-      print('上傳成功: $responseBody');
-      if (context.mounted) {
+      _logger.i('上傳成功: $responseBody');
+      if (context.mounted) { 
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('照片儲存成功')));
-        Navigator.pop(context); // 回上一頁
+        Navigator.pop(context);
       }
     } else {
-      print('上傳失敗: $responseBody');
-      if (context.mounted) {
+      _logger.e('上傳失敗: $responseBody');
+      if (context.mounted) { 
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('上傳失敗')));
       }
     }
   }
 
-    @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("預覽照片")),
