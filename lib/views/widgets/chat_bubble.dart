@@ -10,6 +10,8 @@ class ChatBubble extends StatelessWidget {
   final void Function(int index)? onDeleteSubTopic;
   final VoidCallback? onGenerateMoodboardPressed;
   final VoidCallback? onUserDeclineMoodboard;
+  final VoidCallback? onGenerateTasksPressed;
+  final VoidCallback? onUserDeclineTasks;
 
   const ChatBubble({
     required this.text,
@@ -20,6 +22,8 @@ class ChatBubble extends StatelessWidget {
     this.onDeleteSubTopic,
     this.onGenerateMoodboardPressed,
     this.onUserDeclineMoodboard,
+    this.onGenerateTasksPressed,
+    this.onUserDeclineTasks,
     super.key,
   });
 
@@ -262,7 +266,48 @@ class ChatBubble extends StatelessWidget {
                 ],
               ],
             ),
-          )
+          ),
+
+        if (!fromUser && onGenerateTasksPressed != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                ElevatedButton(
+                  onPressed: onGenerateTasksPressed,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    minimumSize: const Size(0, 36),
+                    textStyle: const TextStyle(fontSize: 14),
+                    backgroundColor: const Color(0xFF4A749E),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text("幫我生成任務"),
+                ),
+                if (onUserDeclineTasks != null) ...[
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: onUserDeclineTasks,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      minimumSize: const Size(0, 36),
+                      textStyle: const TextStyle(fontSize: 14),
+                      backgroundColor: Colors.grey,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text("這次不要"),
+                  ),
+                ],
+              ],
+            ),
+          ),
       ],
     );
   }

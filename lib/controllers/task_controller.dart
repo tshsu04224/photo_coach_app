@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import '../models/task_model.dart';
 
 class TaskController extends ChangeNotifier {
+  DateTime _selectedDate = DateTime.now();
 
-  DateTime _selectedDate = DateTime.now(); // default
+  final Map<String, List<Task>> _mockTasks = {};  // 新增
 
   DateTime get selectedDate => _selectedDate;
 
-  // switch date
   void setSelectedDate(DateTime date) {
     _selectedDate = date;
     notifyListeners();
@@ -33,45 +33,24 @@ class TaskController extends ChangeNotifier {
         .toList();
   }
 
-  String _formatDate(DateTime date) {
-    return "${date.year}-${_twoDigits(date.month)}-${_twoDigits(date.day)}";
+  void addTaskForDate(DateTime date, Task task) {
+    final key = _formatDate(date);
+    if (_mockTasks.containsKey(key)) {
+      _mockTasks[key]!.add(task);
+    } else {
+      _mockTasks[key] = [task];
+    }
+    notifyListeners();
   }
 
-  String _twoDigits(int n) => n.toString().padLeft(2, '0');
+  void removeTask(DateTime date, Task task) {
+    final key = _formatDate(date);
+    _mockTasks[key]?.remove(task);
+    notifyListeners();
+  }
 
-  // mock data
-  final Map<String, List<Task>> _mockTasks = {
-    "2025-07-21": [
-      Task(
-        title: '日本街景',
-        description: '拍攝一張帶有濃厚日系氛圍的街道畫面…',
-        imageAssetPath: 'assets/images/japan_street.jpeg',
-        subTasks: [
-          SubTask(icon: Icons.electrical_services, content: '拍攝電線桿與交錯的電線構成的畫面', tag: '街拍', isCompleted: false),
-          SubTask(icon: Icons.local_convenience_store, content: '捕捉便利商店或自動販賣機所在的街角',tag: '風景', isCompleted: true),
-          SubTask(icon: Icons.straighten, content: '使用對角線或引導線構圖呈現街道延伸感', tag: '街拍', isCompleted: true),
-        ],
-      ),
-      Task(
-        title: '咖啡店角落',
-        description: '捕捉一張充滿氛圍的咖啡店畫面',
-        imageAssetPath: 'assets/images/cafe_corner.jpeg',
-        subTasks: [
-          SubTask(icon: Icons.local_cafe, content: '拍攝咖啡與桌面擺設', tag: '靜物', isCompleted: false),
-          SubTask(icon: Icons.wb_sunny, content: '利用自然光拍攝窗邊座位', tag: '人像', isCompleted: false),
-        ],
-      ),
-    ],
-    "2025-07-22": [
-      Task(
-        title: '咖啡店角落',
-        description: '捕捉一張充滿氛圍的咖啡店畫面',
-        imageAssetPath: 'assets/images/cafe_corner.jpeg',
-        subTasks: [
-          SubTask(icon: Icons.local_cafe, content: '拍攝咖啡與桌面擺設',tag: '靜物', isCompleted: false),
-          SubTask(icon: Icons.wb_sunny, content: '利用自然光拍攝窗邊座位',tag: '靜物', isCompleted: false),
-        ],
-      ),
-    ],
-  };
+  String _formatDate(DateTime date) =>
+      "${date.year}-${_twoDigits(date.month)}-${_twoDigits(date.day)}";
+
+  String _twoDigits(int n) => n.toString().padLeft(2, '0');
 }

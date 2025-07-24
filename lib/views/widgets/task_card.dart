@@ -42,7 +42,7 @@ class TaskCard extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Image.asset(
-                task.imageAssetPath,
+                task.imageUrl,
                 height: 160,
                 width: double.infinity,
                 fit: BoxFit.cover,
