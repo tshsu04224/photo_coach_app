@@ -72,18 +72,17 @@ class ApiService {
         return SubTask(
           content: e['task']?.toString() ?? '',
           tag: e['tag']?.toString() ?? '',
-          icon: Icons.circle, // 或之後改成從 tag 推 icon
+          icon: Icons.circle, // 或之後根據 tag 判斷 icon
+          suggestedPosition: e['suggested_position']?.toString() ?? '',
+          lightingCondition: e['lighting_condition']?.toString() ?? '',
+          shootingTechnique: e['shooting_technique']?.toString() ?? '',
+          recommendedTime: e['recommended_time']?.toString() ?? '',
         );
       }).toList();
 
-      final String resolvedTopic = data['tasks'].isNotEmpty
-          ? data['tasks'][0]['sub_topic'] ?? mainTopic
-          : mainTopic;
-
       return Task(
-        title: resolvedTopic,
-        description: '',
-        imageUrl: 'assets/images/example.webp',
+        title: mainTopic,
+        imageUrl: 'assets/images/example.webp', // 可根據主題生成對應圖
         subTasks: subTasks,
       );
     } else {

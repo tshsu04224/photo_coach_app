@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class ChatMessage {
   final String text;
   final bool fromUser;
+  final String? mainTopic;
   final List<String>? subTopics;
   final List<String>? visualKeywords;
   final String? moodboardUrl;
@@ -17,6 +18,7 @@ class ChatMessage {
   ChatMessage({
     required this.text,
     required this.fromUser,
+    this.mainTopic,
     this.subTopics,
     this.visualKeywords,
     this.moodboardUrl,

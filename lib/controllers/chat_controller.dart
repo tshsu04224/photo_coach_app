@@ -32,6 +32,7 @@ class ChatController extends ChangeNotifier {
         text: aiResp.reply,
         fromUser: false,
         subTopics: aiResp.subTopics.isNotEmpty ? aiResp.subTopics : null,
+        mainTopic: aiResp.mainTopic,
       ));
 
       if (aiResp.subTopics.isNotEmpty) {
@@ -89,7 +90,7 @@ class ChatController extends ChangeNotifier {
 
         try {
 
-          final generatedTask = await ApiService.generateTasks(aiResp.reply, aiResp.subTopics);
+          final generatedTask = await ApiService.generateTasks(aiResp.mainTopic, aiResp.subTopics);
 
           _messages.removeAt(loadingIndex);
           _addMessage(ChatMessage(
