@@ -5,9 +5,15 @@ import '../controllers/task_controller.dart';
 import '../views/widgets/task_card.dart';
 import '../views/widgets/bottom_nav_bar.dart';
 
-
-class TaskListPage extends StatelessWidget {
+class TaskListPage extends StatefulWidget {
   const TaskListPage({super.key});
+
+  @override
+  State<TaskListPage> createState() => _TaskListPageState();
+}
+
+class _TaskListPageState extends State<TaskListPage> {
+  int? expandedIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -84,31 +90,29 @@ class TaskListPage extends StatelessWidget {
                   ],
                 ),
               ),
+
               const WeekDaySelector(),
               const SizedBox(height: 4),
-              // task card
+
               Expanded(
                 child: tasks.isEmpty
                     ? const Center(child: Text("今天沒有任務"))
                     : ListView.builder(
                   itemCount: tasks.length,
                   itemBuilder: (context, index) {
-                    return TaskCard(task: tasks[index]);
+                    final task = tasks[index];
+                    return TaskCard(
+                      task: task,
+                    );
                   },
                 ),
               ),
             ],
           ),
-
-          // BottomNavigationBar
           bottomNavigationBar: BottomNavBar(
             currentIndex: 0,
             onTap: (index) {
-              // 根據 index 切換頁面
-              if (index == 0) {
-                // stay
-              }
-              // 例如 Navigator.pushNamed(context, '/calendar');
+              // 導頁邏輯
             },
           ),
         );
@@ -116,3 +120,4 @@ class TaskListPage extends StatelessWidget {
     );
   }
 }
+

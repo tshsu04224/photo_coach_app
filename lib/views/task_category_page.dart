@@ -14,6 +14,7 @@ class TaskCategoryPage extends StatefulWidget {
 class _TaskCategoryPageState extends State<TaskCategoryPage> {
   final List<String> allTags = ['人像', '食物', '街拍', '風景', '靜物', '建築', '動物', '旅拍'];
   final Set<String> selectedTags = {};
+  int? expandedIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -94,8 +95,9 @@ class _TaskCategoryPageState extends State<TaskCategoryPage> {
                 : ListView.builder(
               itemCount: filteredTasks.length,
               itemBuilder: (context, index) {
+                final task = filteredTasks[index];
                 return TaskCard(
-                  task: filteredTasks[index],
+                  task: task,
                   filterTags: selectedTags,
                 );
               },
