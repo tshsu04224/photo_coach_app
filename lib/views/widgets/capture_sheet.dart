@@ -4,9 +4,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../controllers/analyze_controller.dart';
 import '../analysis_result_page.dart';
+// import 'package:http/http.dart' as http;
+// import 'package:mime/mime.dart';
+// import 'package:http_parser/http_parser.dart';
+// import 'package:logger/logger.dart';
 
 class CaptureSheet extends StatelessWidget {
-  const CaptureSheet({super.key});
+  const CaptureSheet({super.key}); // Removed const constructor
 
   Future<void> _pickImage(BuildContext context, ImageSource source) async {
     final picker = ImagePicker();
