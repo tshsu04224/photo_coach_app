@@ -10,7 +10,7 @@ import 'views/auth/auth_selection_screen.dart';
 import 'views/auth/login_page.dart';
 import 'views/auth/register_page.dart';
 import 'views/auth/register_preference_page.dart';
-import 'views/home_page.dart';
+import 'views/main_page.dart';
 
 
 class MyApp extends StatelessWidget {
@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
               Routes.login: (_) => const LoginPage(),
               Routes.register: (_) => const RegisterPage(),
               Routes.registerPreferences: (_) => const RegisterPreferencePage(),
-              Routes.home: (_) => const ChatPage(),
+              Routes.home: (_) => const MainPage(),
               Routes.chat: (_) => const ChatPage(),
             },
           );
