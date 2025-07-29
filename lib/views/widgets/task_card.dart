@@ -125,6 +125,7 @@ class _AnimatedSubTaskTileState extends State<AnimatedSubTaskTile>
         InkWell(
           onTap: _toggleExpanded,
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Icon(
                 widget.subTask.isCompleted
@@ -136,15 +137,35 @@ class _AnimatedSubTaskTileState extends State<AnimatedSubTaskTile>
                 size: 20,
               ),
               const SizedBox(width: 8),
+
               Expanded(
                 child: Text(
                   widget.subTask.content,
                   style: const TextStyle(fontSize: 14),
                 ),
               ),
-              Icon(
-                isExpanded ? Icons.expand_less : Icons.expand_more,
-                color: Colors.grey,
+
+              const SizedBox(width: 8),
+
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF1F1F1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      widget.subTask.tag,
+                      style: const TextStyle(fontSize: 12, color: Colors.black87),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(
+                    isExpanded ? Icons.expand_less : Icons.expand_more,
+                    color: Colors.grey,
+                  ),
+                ],
               ),
             ],
           ),
@@ -173,8 +194,8 @@ class _AnimatedSubTaskTileState extends State<AnimatedSubTaskTile>
                 const SizedBox(height: 12),
                 Center(
                   child: SizedBox(
-                    width: 260, // ✅ 適中偏寬，讓整體看起來細長
-                    height: 42,  // ✅ 偏矮，視覺更修長
+                    width: 260,
+                    height: 42,
                     child: ElevatedButton.icon(
                       onPressed: () {
                         Navigator.push(
