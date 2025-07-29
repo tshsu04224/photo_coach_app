@@ -2,8 +2,6 @@
 // 這個頁面會顯示使用者的頭像、拍攝任務按鈕、功能目錄、今日任務與近期作品...
 // 目前皆仍為假資料與沒有功能的按鈕(待實作)
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../controllers/auth_controller.dart';
 import '../routes/routes.dart';
 
 class HomePage extends StatefulWidget {

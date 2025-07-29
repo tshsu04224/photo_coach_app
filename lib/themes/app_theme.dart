@@ -67,7 +67,7 @@ class AppTheme {
           foregroundColor: WidgetStateProperty.all(Colors.white),
           overlayColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.hovered)) {
-              return primary.withOpacity(0.1);
+              return primary.withAlpha((0.1 * 255).toInt());
             }
             return null;
           }),
@@ -106,7 +106,7 @@ class AppTheme {
       chipTheme: ChipThemeData(
         backgroundColor: Colors.grey.shade200,
         disabledColor: Colors.grey.shade100,
-        selectedColor: primary.withOpacity(0.2),
+        selectedColor: primary.withAlpha((0.2 * 255).toInt()),
         secondarySelectedColor: primary,
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         labelStyle: const TextStyle(color: Colors.black87),
