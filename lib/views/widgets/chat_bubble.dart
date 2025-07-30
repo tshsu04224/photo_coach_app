@@ -36,17 +36,17 @@ class ChatBubble extends StatelessWidget {
     final textColor = fromUser ? Colors.white : Colors.black87;
     final radius = fromUser
         ? const BorderRadius.only(
-      topLeft: Radius.circular(16),
-      topRight: Radius.circular(16),
-      bottomLeft: Radius.circular(16),
-      bottomRight: Radius.circular(0),
-    )
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+            bottomLeft: Radius.circular(16),
+            bottomRight: Radius.circular(0),
+          )
         : const BorderRadius.only(
-      topLeft: Radius.circular(16),
-      topRight: Radius.circular(16),
-      bottomLeft: Radius.circular(0),
-      bottomRight: Radius.circular(16),
-    );
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+            bottomLeft: Radius.circular(0),
+            bottomRight: Radius.circular(16),
+          );
 
     if (!fromUser && text == "生成中...") {
       return Padding(
