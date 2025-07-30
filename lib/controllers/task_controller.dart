@@ -43,11 +43,25 @@ class TaskController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeTask(DateTime date, Task task) {
-    final key = _formatDate(date);
-    _mockTasks[key]?.remove(task);
-    notifyListeners();
+  void removeTask(Task task) {
+    String? foundKey;
+
+    _mockTasks.forEach((key, taskList) {
+      if (taskList.contains(task)) {
+        foundKey = key;
+      }
+    });
+
+    if (foundKey != null) {
+      _mockTasks[foundKey]!.remove(task);
+
+      if (_mockTasks[foundKey]!.isEmpty) {
+        _mockTasks.remove(foundKey);
+      }
+      notifyListeners();
+    }
   }
+
 
   String _formatDate(DateTime date) =>
       "${date.year}-${_twoDigits(date.month)}-${_twoDigits(date.day)}";
