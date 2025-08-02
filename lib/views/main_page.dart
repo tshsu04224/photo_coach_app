@@ -29,7 +29,6 @@ class _MainPageState extends State<MainPage> {
 
   void _onTabTapped(int index) {
     if (index == 2) {
-      // 相機 → 彈出拍攝任務選擇框
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -80,7 +79,7 @@ Widget _buildTaskChoiceDialog(BuildContext context) {
           ),
           const SizedBox(height: 16),
 
-          // 建立主題按鈕
+          // 建立主題
           ElevatedButton.icon(
             onPressed: () async {
               Navigator.pop(context); // 關閉 dialog
@@ -124,10 +123,9 @@ Widget _buildTaskChoiceDialog(BuildContext context) {
           ),
           const SizedBox(height: 16),
 
-          // GPS推薦按鈕
+          // GPS推薦
           ElevatedButton.icon(
             onPressed: () {
-              // TODO: 導向 GPS 推薦
               Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(

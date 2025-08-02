@@ -76,7 +76,7 @@ class ApiService {
         return SubTask(
           content: e['task']?.toString() ?? '',
           tag: e['tag']?.toString() ?? '',
-          icon: Icons.circle, // 或之後根據 tag 判斷 icon
+          icon: Icons.circle,
           suggestedPosition: e['suggested_position']?.toString() ?? '',
           lightingCondition: e['lighting_condition']?.toString() ?? '',
           shootingTechnique: e['shooting_technique']?.toString() ?? '',

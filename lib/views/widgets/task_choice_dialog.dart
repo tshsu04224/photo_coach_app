@@ -39,7 +39,7 @@ class _TaskChoiceDialogState extends State<TaskChoiceDialog> {
             ),
             const SizedBox(height: 16),
 
-            // 按鈕一：建立主題
+            // 建立主題
             ElevatedButton.icon(
               onPressed: () {
                 Navigator.pop(context);
@@ -63,7 +63,7 @@ class _TaskChoiceDialogState extends State<TaskChoiceDialog> {
             ),
             const SizedBox(height: 16),
 
-            // 按鈕二：GPS 推薦
+            // GPS 推薦
             ElevatedButton.icon(
               onPressed: () async {
                 final selectedLabel = await showDialog<String>(
@@ -153,7 +153,6 @@ class _TaskChoiceDialogState extends State<TaskChoiceDialog> {
     );
   }
 
-  // 共用樣式：按鈕
   ButtonStyle _buttonStyle() {
     return ElevatedButton.styleFrom(
       backgroundColor: Colors.white,
@@ -164,7 +163,6 @@ class _TaskChoiceDialogState extends State<TaskChoiceDialog> {
     );
   }
 
-  // 共用樣式：圖示背景
   Widget _iconBox(IconData icon) {
     return Container(
       decoration: const BoxDecoration(
@@ -176,7 +174,6 @@ class _TaskChoiceDialogState extends State<TaskChoiceDialog> {
     );
   }
 
-  // 錯誤提示 Dialog
   void _showAlert(BuildContext context, String title, String message) {
     showDialog(
       context: context,

@@ -34,11 +34,11 @@ class _PlaceTypeSelectDialogState extends State<PlaceTypeSelectDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context), // 取消
+          onPressed: () => Navigator.pop(context),
           child: const Text("取消"),
         ),
         ElevatedButton(
-          onPressed: () => Navigator.pop(context, selectedLabel), // 回傳選擇
+          onPressed: () => Navigator.pop(context, selectedLabel),
           child: const Text("確定"),
         ),
       ],
