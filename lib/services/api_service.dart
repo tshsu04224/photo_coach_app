@@ -7,11 +7,15 @@ import '../models/task_model.dart';
 class ApiService {
   static const String _baseUrl = 'http://127.0.0.1:8000';
 
-  static Future<AIChatResponse> chat(String message) async {
+  static Future<AIChatResponse> chat(String message, {String? type}) async {
+    print('[ApiService.chat] prompt="$message", type="$type"');
     final response = await http.post(
       Uri.parse('$_baseUrl/ai/chat'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'prompt': message}),
+      body: jsonEncode({
+        'prompt': message,
+        if (type != null) 'place_type': type,
+      }),
     );
 
     if (response.statusCode == 200) {
@@ -82,12 +86,31 @@ class ApiService {
 
       return Task(
         title: mainTopic,
-        imageUrl: 'assets/images/example.webp', // 可根據主題生成對應圖
+        imageUrl: 'assets/images/example.webp',
         subTasks: subTasks,
       );
     } else {
       throw Exception('無法產生任務：${response.statusCode} ${response.body}');
     }
   }
+
+  static Future<List<Map<String, dynamic>>> getRecommendedSpots(
+      double lat,
+      double lng,
+      String placeType,
+      ) async {
+    print('Calling API with lat=$lat, lon=$lng, type=$placeType');
+    final response = await http.get(Uri.parse(
+      '$_baseUrl/recommend_spots?lat=$lat&lng=$lng&place_type=$placeType',
+    ));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return List<Map<String, dynamic>>.from(data['spots']);
+    } else {
+      return [];
+    }
+  }
+
 
 }

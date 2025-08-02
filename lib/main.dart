@@ -16,7 +16,6 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthController()),
         ChangeNotifierProvider(create: (_) => TaskController()),
-        ChangeNotifierProvider(create: (_) => ChatController())
       ],
       child: const MyApp(),
     ),

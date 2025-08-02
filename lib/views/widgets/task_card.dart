@@ -107,7 +107,7 @@ class _TaskCardState extends State<TaskCard> {
                   const SizedBox(width: 6),
                   isEditMode
                       ? IconButton(
-                    icon: const Icon(Icons.save, color: Colors.blue),
+                    icon: const Icon(Icons.save, color: Color(0xFF4A749E)),
                     onPressed: _saveChanges,
                   )
                       : PopupMenuButton<String>(

@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
               Routes.login: (_) => const LoginPage(),
               Routes.register: (_) => const RegisterPage(),
               Routes.registerPreferences: (_) => const RegisterPreferencePage(),
-              Routes.home: (_) => const ChatPage(),
+              Routes.home: (_) => const HomePage(),
               Routes.chat: (_) => const ChatPage(),
             },
           );

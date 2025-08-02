@@ -9,10 +9,23 @@ class ChatController extends ChangeNotifier {
   final List<ChatMessage> _messages = [];
   final TextEditingController inputController = TextEditingController();
 
+  final String? initialPrompt;
+  final String? placeType;
+  bool _hasInit = false;
+
   List<ChatMessage> get messages => _messages;
 
-  ChatController() {
-    _messages.add(ChatMessage(text: '哈囉，今天想要拍什麼呢？', fromUser: false));
+  ChatController({this.initialPrompt, this.placeType});
+
+  void init(BuildContext context) {
+    if (_hasInit) return;
+    _hasInit = true;
+
+    if (initialPrompt == null || initialPrompt!.isEmpty) {
+      _addMessage(ChatMessage(text: '哈囉，今天想要拍什麼呢？', fromUser: false));
+    } else {
+      sendMessage(initialPrompt!, context);
+    }
   }
 
   void _addMessage(ChatMessage message) {
@@ -26,7 +39,7 @@ class ChatController extends ChangeNotifier {
     inputController.clear();
 
     try {
-      final aiResp = await ApiService.chat(text);
+      final aiResp = await ApiService.chat(text, type: placeType);
 
       _addMessage(ChatMessage(
         text: aiResp.reply,
