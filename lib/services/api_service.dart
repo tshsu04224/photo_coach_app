@@ -99,7 +99,7 @@ class ApiService {
       double lng,
       String placeType,
       ) async {
-    print('Calling API with lat=$lat, lon=$lng, type=$placeType');
+    // print('Calling API with lat=$lat, lon=$lng, type=$placeType');
     final response = await http.get(Uri.parse(
       '$_baseUrl/recommend_spots?lat=$lat&lng=$lng&place_type=$placeType',
     ));
