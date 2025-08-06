@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'widgets/week_day_selector.dart';
 import '../controllers/task_controller.dart';
 import '../views/widgets/task_card.dart';
-import '../views/widgets/bottom_nav_bar.dart';
+import 'task_category_page.dart';
 
 class TaskListPage extends StatefulWidget {
   const TaskListPage({super.key});
@@ -25,7 +25,44 @@ class _TaskListPageState extends State<TaskListPage> {
         return Scaffold(
           appBar: AppBar(
             centerTitle: true,
-            title: const Text('任務清單', style: TextStyle(fontWeight: FontWeight.bold)),
+            title: PopupMenuButton<String>(
+              onSelected: (value) {
+                if (value == '任務清單') {
+                  // Do nothing, already on this page
+                } else if (value == '主題分類') {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const TaskCategoryPage(),
+                    ),
+                  );
+                }
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Text(
+                    '任務清單',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(width: 4),
+                  Icon(
+                    Icons.arrow_drop_down,
+                    size: 20,
+                  ),
+                ],
+              ),
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: '任務清單',
+                  child: Text('任務清單'),
+                ),
+                const PopupMenuItem(
+                  value: '主題分類',
+                  child: Text('主題分類'),
+                ),
+              ],
+            ),
             backgroundColor: Colors.white,
             foregroundColor: Colors.black,
             elevation: 0,
@@ -108,12 +145,6 @@ class _TaskListPageState extends State<TaskListPage> {
                 ),
               ),
             ],
-          ),
-          bottomNavigationBar: BottomNavBar(
-            currentIndex: 0,
-            onTap: (index) {
-              // 導頁邏輯
-            },
           ),
         );
       },

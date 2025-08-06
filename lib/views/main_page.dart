@@ -1,7 +1,7 @@
 // 控制底部導覽列跳轉頁面
 import 'package:flutter/material.dart';
 import 'home_page.dart';
-import 'task_page.dart';
+import 'task_category_page.dart';
 import 'gallery_page.dart';
 import 'settings_page.dart';
 import 'widgets/bottom_nav_bar.dart';
@@ -19,7 +19,7 @@ class _MainPageState extends State<MainPage> {
 
   final List<Widget> _pages = const [
     HomePage(),
-    TaskPage(),
+    TaskCategoryPage(),
     GalleryPage(userId: 123), // 替換為實際的 userId
     SettingsPage(),
   ];

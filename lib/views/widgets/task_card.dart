@@ -198,11 +198,9 @@ class _AnimatedSubTaskTileState extends State<AnimatedSubTaskTile>
                     height: 42,
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const CaptureSheet(),
-                          ),
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) => const CaptureSheet(),
                         );
                       },
                       icon: const Icon(Icons.camera_alt, size: 18),
