@@ -2,8 +2,7 @@
 // 這個頁面會顯示使用者的頭像、拍攝任務按鈕、功能目錄、今日任務與近期作品...
 // 目前皆仍為假資料與沒有功能的按鈕(待實作)
 import 'package:flutter/material.dart';
-import 'widgets/bottom_nav_bar.dart';
-import '../routes/routes.dart';
+import '../views/widgets/task_choice_dialog.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -28,22 +27,67 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+Widget _functionIcon(IconData icon, String label) {
+  return Column(
+    children: [
+      CircleAvatar(
+        radius: 28,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        child: Icon(icon, size: 28),
+      ),
+      const SizedBox(height: 6),
+      Text(label, style: const TextStyle(fontSize: 12)),
+    ],
+  );
+}
+
+Widget _photoCard(String title, String subtitle, bool liked, {required String imagePath}) {
+  return Container(
+    width: 120,
+    margin: const EdgeInsets.only(right: 12),
+    padding: const EdgeInsets.all(8),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+      boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Stack(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.asset(
+                imagePath,
+                width: double.infinity,
+                height: 80,
+                fit: BoxFit.cover,
+              ),
+            ),
+            if (liked)
+              const Positioned(
+                top: 6,
+                right: 6,
+                child: Icon(Icons.favorite, color: Colors.black),
+              ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        Text(subtitle, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+      ],
+    ),
+  );
+}
+
 class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-            // 你可以根據 index 導向其他頁面
-          });
-        },
-      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -76,8 +120,16 @@ class _HomePageState extends State<HomePage> {
               // 拍攝任務按鈕
               Center(
                 child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.pushNamed(context, Routes.chat);
+                  onPressed: () async {
+                    final selectedPlaceLabel = await showDialog<String>(
+                      context: context,
+                      builder: (_) => const TaskChoiceDialog(),
+                    );
+
+                    if (selectedPlaceLabel != null) {
+                      final prompt = '我想拍 $selectedPlaceLabel';
+                      sendInitialPrompt(prompt, context);
+                    }
                   },
                   icon: const Icon(Icons.camera_alt),
                   label: const Text("開始拍攝任務"),
@@ -191,58 +243,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _functionIcon(IconData icon, String label) {
-    return Column(
-      children: [
-        CircleAvatar(
-          radius: 28,
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
-          child: Icon(icon, size: 28),
-        ),
-        const SizedBox(height: 6),
-        Text(label, style: const TextStyle(fontSize: 12)),
-      ],
-    );
-  }
-
-  Widget _photoCard(String title, String subtitle, bool liked, {required String imagePath}) {
-    return Container(
-      width: 120,
-      margin: const EdgeInsets.only(right: 12),
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  imagePath,
-                  width: double.infinity,
-                  height: 80,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              if (liked)
-                const Positioned(
-                  top: 6,
-                  right: 6,
-                  child: Icon(Icons.favorite, color: Colors.black),
-                ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-          Text(subtitle, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-        ],
-      ),
-    );
+  void sendInitialPrompt(String prompt, BuildContext context) {
+    Navigator.pushNamed(context, '/chat', arguments: prompt);
   }
 }

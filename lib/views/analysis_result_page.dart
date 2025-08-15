@@ -1,158 +1,53 @@
 import 'package:flutter/material.dart';
-import 'package:photo_coach/views/home_page.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:photo_coach/controllers/analyze_controller.dart';
+import 'package:photo_coach/controllers/feedback_controller.dart';
+import 'package:provider/provider.dart';
+import 'package:photo_coach/models/feedback_model.dart';
+import 'package:photo_coach/utils/tag_icon_mapping.dart';
 
 class AnalysisResultPage extends StatefulWidget {
-  final String imagePath;
-  final List<String> feedback;
-  final List<Map<String, dynamic>> techniques;
-
-  const AnalysisResultPage({
-    super.key,
-    required this.imagePath,
-    required this.feedback,
-    required this.techniques,
-  });
-
-  factory AnalysisResultPage.mock() {
-    return AnalysisResultPage(
-      imagePath: 'https://picsum.photos/600/400',
-      feedback: [
-        '📷 構圖整體穩定，主體清晰、層次分明。',
-        '🎨 色彩搭配自然，畫面氛圍和諧。',
-        '💡 光線處理良好，主體與背景對比適中。',
-        '📐 拍攝角度選擇得當，成功引導觀者視線。',
-        '🖼️ 畫面整潔無干擾元素，呈現主題完整性。'
-      ],
-      techniques: [
-        {'icon': Icons.grid_on, 'label': '基礎構圖'},
-        {'icon': Icons.light_mode, 'label': '自然光'},
-        {'icon': Icons.center_focus_strong, 'label': '主體明確'},
-      ],
-    );
-  }
-
+  const AnalysisResultPage({super.key});
   @override
   State<AnalysisResultPage> createState() => _AnalysisResultPageState();
 }
 
 class _AnalysisResultPageState extends State<AnalysisResultPage> {
   final ValueNotifier<bool> isFavoriteNotifier = ValueNotifier(false);
-  int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    switch (index) {
-      case 0:
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const HomePage()));
-        break;
-      case 1:
-      case 2:
-      case 3:
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const Placeholder()));
-        break;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
+    final controller = context.watch<AnalyzeController>();
+    final feedbackController = context.watch<FeedbackController>();
+
     return Scaffold(
-      backgroundColor: Colors.white,
-      bottomNavigationBar: ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
-        ),
-        child: BottomAppBar(
-          color: Colors.black,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.home),
-                color: _selectedIndex == 0 ? Colors.white : Colors.grey,
-                onPressed: () => _onItemTapped(0),
-              ),
-              IconButton(
-                icon: const Icon(Icons.calendar_today),
-                color: _selectedIndex == 1 ? Colors.white : Colors.grey,
-                onPressed: () => _onItemTapped(1),
-              ),
-              const SizedBox(width: 48),
-              IconButton(
-                icon: const Icon(Icons.image),
-                color: _selectedIndex == 2 ? Colors.white : Colors.grey,
-                onPressed: () => _onItemTapped(2),
-              ),
-              IconButton(
-                icon: const Icon(Icons.settings),
-                color: _selectedIndex == 3 ? Colors.white : Colors.grey,
-                onPressed: () => _onItemTapped(3),
-              ),
-            ],
-          ),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const Placeholder()));
-        },
-        child: const Icon(Icons.camera_alt),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: controller.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildImageWithHeart(widget.imagePath),
+              _buildImageSection(controller),
+              const SizedBox(height: 16),
+              const Text(
+                '分析結果',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              _buildAnalysisSummaryRow(controller),
               const SizedBox(height: 12),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Text(
-                  '三分法構圖實作',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-                child: Row(
-                  children: [
-                    Text("AI 的評分", style: TextStyle(fontSize: 14)),
-                    SizedBox(width: 6),
-                    Icon(Icons.star, size: 16, color: Colors.amber),
-                    Text(" 4.5", style: TextStyle(fontSize: 14)),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (final line in widget.feedback)
-                      _BulletText(line),
-                    const SizedBox(height: 8),
-                    const Text("查看完整內容", style: TextStyle(color: Colors.blue)),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  children: widget.techniques
-                      .map((tech) => Padding(
-                    padding: const EdgeInsets.only(right: 12.0),
-                    child: _TagButton(icon: tech['icon'], label: tech['label']),
-                  ))
-                      .toList(),
-                ),
-              ),
-              const SizedBox(height: 30),
+              _buildFeedbackSection(feedbackController),
+              const SizedBox(height: 16),
+              _buildTagButtons(controller.techniques),
+              const SizedBox(height: 16),
+              _buildAnalyzeButton(controller),
+              _buildFakeTestButton(context, controller),
             ],
           ),
         ),
@@ -160,55 +55,195 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
     );
   }
 
-  Widget _buildImageWithHeart(String imageUrl) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Stack(
-        alignment: Alignment.topRight,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Image.network(
-              imageUrl,
-              width: double.infinity,
-              height: 300,
-              fit: BoxFit.cover,
-            ),
-          ),
-          ValueListenableBuilder<bool>(
-            valueListenable: isFavoriteNotifier,
-            builder: (context, isFavorite, child) {
-              return GestureDetector(
-                onTap: () => isFavoriteNotifier.value = !isFavoriteNotifier.value,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Icon(
-                    isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: Colors.pinkAccent,
-                    size: 28,
+  Widget _buildImageSection(AnalyzeController controller) {
+    final imageFile = controller.analyzedImage;
+    return FutureBuilder(
+      future: Future.delayed(const Duration(milliseconds: 100)),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const SizedBox(
+            height: 250,
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+        return Center(
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: SizedBox(
+                  height: 300,
+                  child: imageFile != null
+                      ? Image.file(imageFile, fit: BoxFit.cover)
+                      : Container(
+                    height: 300,
+                    color: Colors.grey[200],
+                    child: const Center(child: Text("尚未選擇照片")),
                   ),
                 ),
-              );
-            },
+              ),
+              Positioned(
+                top: 10,
+                left: 10,
+                child: CircleAvatar(
+                  radius: 20,
+                  backgroundColor: Colors.white,
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.black),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 10,
+                right: 10,
+                child: GestureDetector(
+                  onTap: () =>
+                  isFavoriteNotifier.value = !isFavoriteNotifier.value,
+                  child: ValueListenableBuilder<bool>(
+                    valueListenable: isFavoriteNotifier,
+                    builder: (context, isFavorite, child) {
+                      return CircleAvatar(
+                        radius: 20,
+                        backgroundColor: Colors.white,
+                        child: Icon(
+                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                          color: Colors.red,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
+    );
+  }
+
+  /// 以新格式顯示一行摘要（例如：觀察敘述的數量）
+  Widget _buildAnalysisSummaryRow(AnalyzeController controller) {
+    final obsCount = controller.observations.length;
+    final hasObs = obsCount > 0;
+    return Row(
+      children: [
+        const Icon(Icons.insights, color: Colors.blueGrey, size: 16),
+        const SizedBox(width: 6),
+        Text(
+          hasObs ? '已產出回饋' : '尚未有分析觀察',
+          style: const TextStyle(fontSize: 14, color: Colors.grey),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTagButtons(List<String> tagsFromAnalysis) {
+    final List<Widget> tagWidgets = [];
+
+    for (final tag in tagsFromAnalysis) {
+      if (availableTags.containsKey(tag)) {
+        tagWidgets.add(
+          _TagButton(
+            label: tag,
+            icon: availableTags[tag]!,
+          ),
+        );
+      }
+    }
+
+    return tagWidgets.isNotEmpty
+        ? Wrap(
+      spacing: 16,
+      runSpacing: 12,
+      alignment: WrapAlignment.start,
+      children: tagWidgets,
+    )
+        : const Text("未偵測到攝影技巧", style: TextStyle(color: Colors.grey));
+  }
+
+  Widget _buildFeedbackSection(FeedbackController controller) {
+    final String? content = controller.feedback;
+
+    return content != null && content.isNotEmpty
+        ? Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "回饋建議",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        Text(content),
+        const SizedBox(height: 16),
+      ],
+    )
+        : const SizedBox(); // 若沒有內容就不顯示
+  }
+
+  Widget _buildAnalyzeButton(AnalyzeController analyzeController) {
+    return ElevatedButton(
+      onPressed: () async {
+        // 提前取得 context 相關內容，避免 async gap 警告
+        final picker = ImagePicker();
+        final feedbackController = context.read<FeedbackController>();
+
+        final picked = await picker.pickImage(source: ImageSource.gallery);
+        if (picked != null) {
+          final file = File(picked.path);
+
+          // 1) 進行分析（AnalyzeController 會以新格式填入 observations / techniquesByCategory / techniques）
+          await analyzeController.analyze(file);
+
+          // 2) 以「新格式」建立 FeedbackInput
+          final feedbackInput = FeedbackInput(
+            observation: analyzeController.observations,
+            techniques: analyzeController.techniquesByCategory,
+          );
+
+          // 3) 呼叫回饋 API
+          await feedbackController.fetchFeedback(feedbackInput);
+        }
+      },
+      child: const Text("分析照片"),
     );
   }
 }
 
-class _BulletText extends StatelessWidget {
-  final String text;
-  const _BulletText(this.text);
+/// 測試用：用新格式模擬分析結果
+Widget _buildFakeTestButton(BuildContext context, AnalyzeController c) {
+  return ElevatedButton(
+    onPressed: () async {
+      final feedbackController = context.read<FeedbackController>();
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 5),
-      child: Text(text, style: const TextStyle(fontSize: 15, height: 1.4)),
-    );
-  }
+      // 模擬資料
+      c.observations = [
+        "主體是一隻貓，位於畫面右側，佔畫面約 35%",
+        "光線從左上角進入",
+        "拍攝視角略為仰角"
+      ];
+      c.techniquesByCategory = {
+        '構圖技巧': ['三分法', '對角線構圖'],
+        '光線運用': ['側光'],
+        '拍攝角度': ['仰角'],
+      };
+
+      //
+      c.refreshBadges();
+
+      // 呼叫回饋 API（新格式）
+      final input = FeedbackInput(
+        observation: c.observations,
+        techniques: c.techniquesByCategory,
+      );
+      await feedbackController.fetchFeedback(input);
+    },
+    child: const Text("測試"),
+  );
 }
+
+
 
 class _TagButton extends StatelessWidget {
   final String label;
@@ -221,8 +256,8 @@ class _TagButton extends StatelessWidget {
     return Column(
       children: [
         CircleAvatar(
-          backgroundColor: Colors.grey.shade200,
           radius: 24,
+          backgroundColor: Colors.grey[200],
           child: Icon(icon, color: Colors.black),
         ),
         const SizedBox(height: 4),
