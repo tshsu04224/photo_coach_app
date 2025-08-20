@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:photo_coach/controllers/analyze_controller.dart';
+import 'package:photo_coach/controllers/feedback_controller.dart';
 import 'package:provider/provider.dart';
+import 'package:photo_coach/models/feedback_model.dart';
+import 'package:photo_coach/utils/tag_icon_mapping.dart';
 
 class AnalysisResultPage extends StatefulWidget {
   const AnalysisResultPage({super.key});
-
   @override
   State<AnalysisResultPage> createState() => _AnalysisResultPageState();
 }
@@ -15,6 +17,7 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<AnalyzeController>();
+    final feedbackController = context.watch<FeedbackController>();
 
     return Scaffold(
       body: SafeArea(
@@ -43,6 +46,18 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                   ],
                 ),
               ),
+              const SizedBox(height: 8),
+              _buildAnalysisSummaryRow(controller),
+              const SizedBox(height: 12),
+              _buildFeedbackSection(feedbackController),
+              const SizedBox(height: 16),
+              _buildTagButtons(controller.techniques),
+              const SizedBox(height: 16),
+              _buildAnalyzeButton(controller),
+              _buildFakeTestButton(context, controller),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -69,10 +84,10 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                   child: imageFile != null
                       ? Image.file(imageFile, fit: BoxFit.cover)
                       : Container(
-                          height: 300,
-                          color: Colors.grey[200],
-                          child: const Center(child: Text("尚未選擇照片")),
-                        ),
+                    height: 300,
+                    color: Colors.grey[200],
+                    child: const Center(child: Text("尚未選擇照片")),
+                  ),
                 ),
               ),
               Positioned(
@@ -92,7 +107,7 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                 right: 10,
                 child: GestureDetector(
                   onTap: () =>
-                      isFavoriteNotifier.value = !isFavoriteNotifier.value,
+                  isFavoriteNotifier.value = !isFavoriteNotifier.value,
                   child: ValueListenableBuilder<bool>(
                     valueListenable: isFavoriteNotifier,
                     builder: (context, isFavorite, child) {
@@ -115,62 +130,127 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
     );
   }
 
-  Widget _buildRatingRow(AnalyzeController controller) {
+  /// 以新格式顯示一行摘要（例如：觀察敘述的數量）
+  Widget _buildAnalysisSummaryRow(AnalyzeController controller) {
+    final obsCount = controller.observations.length;
+    final hasObs = obsCount > 0;
     return Row(
       children: [
-        const Text("AI的評分", style: TextStyle(fontSize: 14, color: Colors.grey)),
-        const SizedBox(width: 4),
-        const Icon(Icons.star, color: Colors.orange, size: 16),
-        Text(controller.score ?? '', style: const TextStyle(fontSize: 14)),
+        const Icon(Icons.insights, color: Colors.blueGrey, size: 16),
+        const SizedBox(width: 6),
+        Text(
+          hasObs ? '已產出回饋' : '尚未有分析觀察',
+          style: const TextStyle(fontSize: 14, color: Colors.grey),
+        ),
       ],
     );
   }
 
-  Widget _buildBulletPoints(AnalyzeController controller) {
-    return Column(
+  Widget _buildTagButtons(List<String> tagsFromAnalysis) {
+    final List<Widget> tagWidgets = [];
+
+    for (final tag in tagsFromAnalysis) {
+      if (availableTags.containsKey(tag)) {
+        tagWidgets.add(
+          _TagButton(
+            label: tag,
+            icon: availableTags[tag]!,
+          ),
+        );
+      }
+    }
+
+    return tagWidgets.isNotEmpty
+        ? Wrap(
+      spacing: 16,
+      runSpacing: 12,
+      alignment: WrapAlignment.start,
+      children: tagWidgets,
+    )
+        : const Text("未偵測到攝影技巧", style: TextStyle(color: Colors.grey));
+  }
+
+  Widget _buildFeedbackSection(FeedbackController controller) {
+    final String? content = controller.feedback;
+
+    return content != null && content.isNotEmpty
+        ? Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildBullet("📸 拍攝亮點", controller.highlight),
-        _buildBullet("🎯 改進建議", controller.suggestion),
-        _buildBullet("🧠 學習提示", controller.tip),
-        _buildBullet("💡 建議任務挑戰", controller.challenge),
+        const Text(
+          "回饋建議",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        Text(content),
+        const SizedBox(height: 16),
       ],
-    );
+    )
+        : const SizedBox(); // 若沒有內容就不顯示
   }
 
-  Widget _buildBullet(String title, String? content) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-          Text(content ?? '尚未分析'),
-        ],
-      ),
-    );
-  }
+  Widget _buildAnalyzeButton(AnalyzeController analyzeController) {
+    return ElevatedButton(
+      onPressed: () async {
+        // 提前取得 context 相關內容，避免 async gap 警告
+        final picker = ImagePicker();
+        final feedbackController = context.read<FeedbackController>();
 
-  Widget _buildTagButtons() {
-    const tags = [
-      {'label': '三分法', 'icon': Icons.grid_3x3},
-      {'label': '色彩對比', 'icon': Icons.palette},
-      {'label': '多層構圖', 'icon': Icons.layers},
-    ];
+        final picked = await picker.pickImage(source: ImageSource.gallery);
+        if (picked != null) {
+          final file = File(picked.path);
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: tags
-          .map(
-            (tag) => _TagButton(
-              label: tag['label'] as String,
-              icon: tag['icon'] as IconData,
-            ),
-          )
-          .toList(),
+          // 1) 進行分析（AnalyzeController 會以新格式填入 observations / techniquesByCategory / techniques）
+          await analyzeController.analyze(file);
+
+          // 2) 以「新格式」建立 FeedbackInput
+          final feedbackInput = FeedbackInput(
+            observation: analyzeController.observations,
+            techniques: analyzeController.techniquesByCategory,
+          );
+
+          // 3) 呼叫回饋 API
+          await feedbackController.fetchFeedback(feedbackInput);
+        }
+      },
+      child: const Text("分析照片"),
     );
   }
 }
+
+/// 測試用：用新格式模擬分析結果
+Widget _buildFakeTestButton(BuildContext context, AnalyzeController c) {
+  return ElevatedButton(
+    onPressed: () async {
+      final feedbackController = context.read<FeedbackController>();
+
+      // 模擬資料
+      c.observations = [
+        "主體是一隻貓，位於畫面右側，佔畫面約 35%",
+        "光線從左上角進入",
+        "拍攝視角略為仰角"
+      ];
+      c.techniquesByCategory = {
+        '構圖技巧': ['三分法', '對角線構圖'],
+        '光線運用': ['側光'],
+        '拍攝角度': ['仰角'],
+      };
+
+      //
+      c.refreshBadges();
+
+      // 呼叫回饋 API（新格式）
+      final input = FeedbackInput(
+        observation: c.observations,
+        techniques: c.techniquesByCategory,
+      );
+      await feedbackController.fetchFeedback(input);
+    },
+    child: const Text("測試"),
+  );
+}
+
+
 
 class _TagButton extends StatelessWidget {
   final String label;
