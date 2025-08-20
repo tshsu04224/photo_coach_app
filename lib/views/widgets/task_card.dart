@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../models/task_model.dart';
+import '../../models/task.dart';
 import 'capture_sheet.dart';
 import 'confirm_dialog.dart';
 
@@ -302,7 +302,9 @@ class _AnimatedSubTaskTileState extends State<AnimatedSubTaskTile>
                       onPressed: () {
                         showModalBottomSheet(
                           context: context,
-                          builder: (context) => const CaptureSheet(),
+                          builder: (context) => CaptureSheet(
+                            subTaskId: widget.subTask.id
+                          ),
                         );
                       },
                       icon: const Icon(Icons.camera_alt, size: 18),

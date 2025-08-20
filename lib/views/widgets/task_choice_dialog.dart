@@ -6,6 +6,7 @@ import 'package:photo_coach/views/widgets/place_type_select_dialog.dart';
 import 'package:photo_coach/views/chat_page.dart';
 import 'package:photo_coach/constants/place_type_constants.dart';
 import 'package:photo_coach/controllers/chat_controller.dart';
+import 'package:photo_coach/controllers/task_controller.dart';
 import 'package:provider/provider.dart';
 
 class TaskChoiceDialog extends StatefulWidget {
@@ -18,6 +19,7 @@ class TaskChoiceDialog extends StatefulWidget {
 class _TaskChoiceDialogState extends State<TaskChoiceDialog> {
   @override
   Widget build(BuildContext context) {
+    final taskController = Provider.of<TaskController>(context, listen: false);
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
@@ -49,7 +51,10 @@ class _TaskChoiceDialogState extends State<TaskChoiceDialog> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => ChangeNotifierProvider(
-                        create: (_) => ChatController(initialPrompt: ''),
+                        create: (_) => ChatController(
+                          initialPrompt: '',
+                          taskService: taskController.taskService,
+                        ),
                         child: const ChatPage(),
                       ),
                     ),
@@ -126,6 +131,7 @@ class _TaskChoiceDialogState extends State<TaskChoiceDialog> {
                             builder: (context) => ChangeNotifierProvider(
                               create: (_) => ChatController(
                                 initialPrompt: '我想在 $spotName 拍些照片',
+                                taskService: taskController.taskService,
                                 placeType: placeType,
                               ),
                               child: const ChatPage(),
