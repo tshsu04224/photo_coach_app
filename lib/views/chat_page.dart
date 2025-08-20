@@ -4,8 +4,33 @@ import 'widgets/capture_sheet.dart';
 import 'package:provider/provider.dart';
 import '../controllers/chat_controller.dart';
 
-class ChatPage extends StatelessWidget {
+class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
+
+  @override
+  State<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      if (!mounted) return;
+
+      final chatController = Provider.of<ChatController>(context, listen: false);
+
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
+      if (args != null && args.containsKey('spot')) {
+        final spot = args['spot'] as String;
+        chatController.inputController.text = spot;
+      }
+
+      chatController.init(context);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -140,6 +140,7 @@ class _TaskListPageState extends State<TaskListPage> {
                     final task = tasks[index];
                     return TaskCard(
                       task: task,
+                      filterTags: null,
                     );
                   },
                 ),

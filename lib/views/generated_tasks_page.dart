@@ -48,6 +48,11 @@ class _GeneratedTasksPageState extends State<GeneratedTasksPage> {
             TaskCard(
               task: task,
               filterTags: null,
+              onDelete: () {
+                // 執行刪除並更新畫面
+                taskController.removeTask(task);
+                setState(() {}); // 重新觸發 build，顯示 "目前沒有任務"
+              },
             ),
           ],
         ),

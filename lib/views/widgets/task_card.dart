@@ -1,25 +1,86 @@
 import 'package:flutter/material.dart';
 import '../../models/task_model.dart';
 import 'capture_sheet.dart';
+import 'confirm_dialog.dart';
 
-class TaskCard extends StatelessWidget {
+class TaskCard extends StatefulWidget {
   final Task task;
   final Set<String>? filterTags;
+  final VoidCallback? onDelete;
 
   const TaskCard({
     super.key,
     required this.task,
     this.filterTags,
+    this.onDelete,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final showAll = filterTags == null || filterTags!.isEmpty;
-    final matchedSubTasks = showAll
-        ? task.subTasks
-        : task.subTasks.where((sub) => filterTags!.contains(sub.tag)).toList();
+  State<TaskCard> createState() => _TaskCardState();
+}
 
-    return Card(
+class _TaskCardState extends State<TaskCard> {
+  bool isEditMode = false;
+  late List<SubTask> editableSubTasks;
+
+  @override
+  void initState() {
+    super.initState();
+    editableSubTasks = List.from(widget.task.subTasks);
+  }
+
+  void _deleteSubTask(int index) async {
+    final confirm = await showConfirmDialog(context, "確定要刪除這個子任務嗎？");
+    if (confirm) {
+      setState(() {
+        editableSubTasks.removeAt(index);
+      });
+    }
+  }
+
+  void _saveChanges() async {
+    final confirm = await showConfirmDialog(context, "是否儲存所有變更？", confirmText: "儲存");
+    if (confirm) {
+      if (editableSubTasks.isEmpty) {
+        // 整張卡片刪除
+        setState(() {
+          widget.task.subTasks.clear();
+        });
+      } else {
+        // 更新卡片內部狀態
+        setState(() {
+          widget.task.subTasks
+            ..clear()
+            ..addAll(editableSubTasks);
+        });
+      }
+      setState(() => isEditMode = false);
+    }
+  }
+
+  void _deleteTask() async {
+    final confirm = await showConfirmDialog(context, "確定要刪除此拍攝主題嗎？");
+    if (confirm) {
+      if (widget.onDelete != null) {
+        widget.onDelete!();
+      } else {
+        setState(() {
+          widget.task.subTasks.clear();
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final showAll = widget.filterTags == null || widget.filterTags!.isEmpty;
+    final matchedSubTasks = showAll
+        ? editableSubTasks
+        : editableSubTasks.where((sub) => widget.filterTags!.contains(sub.tag)).toList();
+
+    return widget.task.subTasks.isEmpty
+        ? const SizedBox.shrink()
+        : Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -29,54 +90,86 @@ class TaskCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: DefaultTextStyle(
-        style: const TextStyle(color: Colors.black87), // 統一文字為黑色
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children:
-              [
-                const Icon(Icons.camera_alt_outlined, size: 20),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    task.title,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: const TextStyle(color: Colors.black87),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.camera_alt_outlined, size: 20),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      widget.task.title,
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                task.imageUrl,
-                height: 160,
-                width: double.infinity,
-                fit: BoxFit.cover,
+                  const SizedBox(width: 6),
+                  isEditMode
+                      ? IconButton(
+                    icon: const Icon(Icons.save, color: Color(0xFF4A749E)),
+                    onPressed: _saveChanges,
+                  )
+                      : PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_vert),
+                    onSelected: (value) {
+                      if (value == 'edit') {
+                        setState(() {
+                          isEditMode = true;
+                        });
+                      } else if (value == 'delete') {
+                        _deleteTask();
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(value: 'edit', child: Text('編輯')),
+                      const PopupMenuItem(value: 'delete', child: Text('刪除')),
+                    ],
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 12),
-
-            // 子任務列表
-            Column(
-              children: matchedSubTasks
-                  .map((sub) => AnimatedSubTaskTile(subTask: sub))
-                  .toList(),
-            ),
-          ],
-        ),
+              const SizedBox(height: 12),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  widget.task.imageUrl,
+                  height: 160,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Column(
+                children: matchedSubTasks
+                    .asMap()
+                    .entries
+                    .map((entry) => AnimatedSubTaskTile(
+                  subTask: entry.value,
+                  isEditMode: isEditMode,
+                  onDelete: () => _deleteSubTask(entry.key),
+                ))
+                    .toList(),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
+
 class AnimatedSubTaskTile extends StatefulWidget {
   final SubTask subTask;
+  final bool isEditMode;
+  final VoidCallback? onDelete;
 
-  const AnimatedSubTaskTile({super.key, required this.subTask});
+  const AnimatedSubTaskTile({
+    super.key,
+    required this.subTask,
+    this.isEditMode = false,
+    this.onDelete,
+  });
 
   @override
   State<AnimatedSubTaskTile> createState() => _AnimatedSubTaskTileState();
@@ -122,31 +215,38 @@ class _AnimatedSubTaskTileState extends State<AnimatedSubTaskTile>
   Widget build(BuildContext context) {
     return Column(
       children: [
-        InkWell(
-          onTap: _toggleExpanded,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(
-                widget.subTask.isCompleted
-                    ? Icons.check_circle
-                    : Icons.radio_button_unchecked,
-                color: widget.subTask.isCompleted
-                    ? const Color(0xFF4A749E)
-                    : Colors.grey,
-                size: 20,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(
+              widget.subTask.isCompleted
+                  ? Icons.check_circle
+                  : Icons.radio_button_unchecked,
+              color: widget.subTask.isCompleted
+                  ? const Color(0xFF4A749E)
+                  : Colors.grey,
+              size: 20,
+            ),
+            const SizedBox(width: 8),
+
+            // 內容
+            Expanded(
+              child: Text(
+                widget.subTask.content,
+                style: const TextStyle(fontSize: 14),
               ),
-              const SizedBox(width: 8),
+            ),
 
-              Expanded(
-                child: Text(
-                  widget.subTask.content,
-                  style: const TextStyle(fontSize: 14),
-                ),
-              ),
+            const SizedBox(width: 8),
 
-              const SizedBox(width: 8),
-
+            // tag + 展開箭頭 or ✕
+            if (widget.isEditMode)
+              IconButton(
+                icon: const Icon(Icons.close, color: Colors.redAccent),
+                onPressed: widget.onDelete,
+                tooltip: '刪除子任務',
+              )
+            else
               Row(
                 children: [
                   Container(
@@ -161,14 +261,16 @@ class _AnimatedSubTaskTileState extends State<AnimatedSubTaskTile>
                     ),
                   ),
                   const SizedBox(width: 4),
-                  Icon(
-                    isExpanded ? Icons.expand_less : Icons.expand_more,
-                    color: Colors.grey,
+                  IconButton(
+                    icon: Icon(
+                      isExpanded ? Icons.expand_less : Icons.expand_more,
+                      color: Colors.grey,
+                    ),
+                    onPressed: _toggleExpanded,
                   ),
                 ],
               ),
-            ],
-          ),
+          ],
         ),
         const SizedBox(height: 6),
 
@@ -204,10 +306,7 @@ class _AnimatedSubTaskTileState extends State<AnimatedSubTaskTile>
                         );
                       },
                       icon: const Icon(Icons.camera_alt, size: 18),
-                      label: const Text(
-                        "開始拍攝任務",
-                        style: TextStyle(fontSize: 12),
-                      ),
+                      label: const Text("開始拍攝任務", style: TextStyle(fontSize: 12)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF4A749E),
                         shape: RoundedRectangleBorder(
@@ -227,3 +326,4 @@ class _AnimatedSubTaskTileState extends State<AnimatedSubTaskTile>
     );
   }
 }
+
