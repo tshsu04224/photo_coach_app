@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../models/ai_chat_response.dart';
-import '../models/task_model.dart';
+import '../models/task.dart';
 
 class ApiService {
   static const String _baseUrl = 'http://10.0.2.2:8000';
@@ -10,7 +10,7 @@ class ApiService {
   static Future<AIChatResponse> chat(String message, {String? type}) async {
     print('[ApiService.chat] prompt="$message", type="$type"');
     final response = await http.post(
-      Uri.parse('$_baseUrl/ai/chat'),
+      Uri.parse('$_baseUrl/ai/chat'), 
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'prompt': message,
@@ -71,23 +71,29 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-
-      final List<SubTask> subTasks = (data['tasks'] as List).map((e) {
+      print('後端返回的完整數據結構:');
+      print(jsonEncode(data)); // 格式化輸出
+      
+      final List<SubTask> subTasks = (data['subtasks'] as List).map((e) {
         return SubTask(
-          content: e['task']?.toString() ?? '',
-          tag: e['tag']?.toString() ?? '',
-          icon: Icons.circle,
-          suggestedPosition: e['suggested_position']?.toString() ?? '',
-          lightingCondition: e['lighting_condition']?.toString() ?? '',
-          shootingTechnique: e['shooting_technique']?.toString() ?? '',
-          recommendedTime: e['recommended_time']?.toString() ?? '',
+          id: e['id'],
+          content: e['content'] ?? '',
+          tag: e['tag'] ?? '',
+          icon: Icons.circle, // 根據 tag 替換也可
+          suggestedPosition: e['suggested_position'] ?? '',
+          lightingCondition: e['lighting_condition'] ?? '',
+          shootingTechnique: e['shooting_technique'] ?? '',
+          recommendedTime: e['recommended_time'] ?? '',
+          isCompleted: e['is_completed'] ?? false,
         );
       }).toList();
 
       return Task(
+        id: data['id'],
         title: mainTopic,
         imageUrl: 'assets/images/example.webp',
         subTasks: subTasks,
+        date: DateTime.parse(data['created_at']),
       );
     } else {
       throw Exception('無法產生任務：${response.statusCode} ${response.body}');
@@ -111,6 +117,4 @@ class ApiService {
       return [];
     }
   }
-
-
 }
