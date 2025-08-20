@@ -58,9 +58,6 @@ class _WeekDaySelectorState extends State<WeekDaySelector> {
             onTap: () {
               taskController.setSelectedDate(day);
               _scrollToCenter(index);
-
-              final tasks = taskController.tasksForSelectedDate;
-              print("📅 $day 有 ${tasks.length} 筆任務");
             },
             child: Container(
               width: 60,

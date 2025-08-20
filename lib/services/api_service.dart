@@ -1,14 +1,16 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 import '../models/ai_chat_response.dart';
 import '../models/task.dart';
 
 class ApiService {
+  static final _logger = Logger();
   static const String _baseUrl = 'http://10.0.2.2:8000';
 
   static Future<AIChatResponse> chat(String message, {String? type}) async {
-    print('[ApiService.chat] prompt="$message", type="$type"');
+    _logger.d('[ApiService.chat] prompt="$message", type="$type"');
     final response = await http.post(
       Uri.parse('$_baseUrl/ai/chat'), 
       headers: {'Content-Type': 'application/json'},
@@ -71,8 +73,8 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      print('後端返回的完整數據結構:');
-      print(jsonEncode(data)); // 格式化輸出
+      _logger.d('後端返回的完整數據結構:');
+      _logger.d(jsonEncode(data)); // 格式化輸出
       
       final List<SubTask> subTasks = (data['subtasks'] as List).map((e) {
         return SubTask(
@@ -105,7 +107,7 @@ class ApiService {
       double lng,
       String placeType,
       ) async {
-    // print('Calling API with lat=$lat, lon=$lng, type=$placeType');
+    _logger.d('Calling API with lat=$lat, lon=$lng, type=$placeType');
     final response = await http.get(Uri.parse(
       '$_baseUrl/recommend_spots?lat=$lat&lng=$lng&place_type=$placeType',
     ));

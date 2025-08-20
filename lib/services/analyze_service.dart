@@ -29,7 +29,7 @@ class AnalyzeService {
     final body = await response.stream.bytesToString();
 
     if (response.statusCode != 200) {
-      throw Exception('分析失敗：${response.statusCode} ${body}');
+      throw Exception('分析失敗：${response.statusCode} $body');
     }
     return json.decode(body);
   }

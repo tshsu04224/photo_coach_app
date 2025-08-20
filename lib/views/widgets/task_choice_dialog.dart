@@ -20,6 +20,7 @@ class _TaskChoiceDialogState extends State<TaskChoiceDialog> {
   @override
   Widget build(BuildContext context) {
     final taskController = Provider.of<TaskController>(context, listen: false);
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
@@ -44,24 +45,20 @@ class _TaskChoiceDialogState extends State<TaskChoiceDialog> {
             // 建立主題
             ElevatedButton.icon(
               onPressed: () {
-                Navigator.pop(context);
-
-                Future.microtask(() {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ChangeNotifierProvider(
-                        create: (_) => ChatController(
-                          initialPrompt: '',
-                          taskService: taskController.taskService,
-                        ),
-                        child: const ChatPage(),
+                final navigator = Navigator.of(context); // 先抓住 NavigatorState
+                navigator.pop(); // 關閉此 Dialog
+                navigator.push(
+                  MaterialPageRoute(
+                    builder: (_) => ChangeNotifierProvider(
+                      create: (_) => ChatController(
+                        initialPrompt: '',
+                        taskService: taskController.taskService,
                       ),
+                      child: const ChatPage(),
                     ),
-                  );
-                });
+                  ),
+                );
               },
-
               style: _buttonStyle(),
               icon: _iconBox(Icons.add),
               label: const Text("建立主題", style: TextStyle(fontSize: 14)),
@@ -71,82 +68,101 @@ class _TaskChoiceDialogState extends State<TaskChoiceDialog> {
             // GPS 推薦
             ElevatedButton.icon(
               onPressed: () async {
+                final navigator = Navigator.of(context); // 先抓住 NavigatorState
+
                 final selectedLabel = await showDialog<String>(
                   context: context,
                   builder: (_) => const PlaceTypeSelectDialog(),
                 );
-
                 if (selectedLabel == null) return;
+                if (!mounted) return;
 
                 try {
+                  // （可選）先檢查系統定位是否啟用
+                  final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+                  if (!serviceEnabled) {
+                    if (!mounted) return;
+                    _showAlert("定位未啟用", "請先開啟定位服務再試一次。");
+                    return;
+                  }
+
+                  // 權限流程
                   LocationPermission permission = await Geolocator.checkPermission();
                   if (permission == LocationPermission.denied) {
                     permission = await Geolocator.requestPermission();
                     if (permission == LocationPermission.denied) {
                       if (!mounted) return;
-                      _showAlert(context, "定位權限被拒絕", "請允許定位以使用此功能。");
+                      _showAlert("定位權限被拒絕", "請允許定位以使用此功能。");
                       return;
                     }
                   }
-
                   if (permission == LocationPermission.deniedForever) {
                     if (!mounted) return;
-                    _showAlert(context, "無法存取定位", "定位權限已永久拒絕，請至設定中手動開啟。");
+                    _showAlert("無法存取定位", "定位權限已永久拒絕，請至設定中手動開啟。");
                     return;
                   }
 
+                  // 取得定位
                   final position = await Geolocator.getCurrentPosition();
+                  if (!mounted) return;
 
-                  final type = placeTypeOptions[selectedLabel]!;
+                  // 取得推薦景點
+                  final type = placeTypeOptions[selectedLabel];
+                  if (type == null) {
+                    _showAlert("資料錯誤", "未知的地點類型：$selectedLabel");
+                    return;
+                  }
+
                   final spots = await ApiService.getRecommendedSpots(
                     position.latitude,
                     position.longitude,
                     type,
                   );
+                  if (!mounted) return;
 
                   if (spots.isNotEmpty) {
+                    // ✅ 用 navigator.context（避免跨 async gap 用原 context）
                     final selectedSpot = await showModalBottomSheet<Map<String, dynamic>>(
-                      context: context,
+                      context: navigator.context,
                       isScrollControlled: true,
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                       ),
                       builder: (_) => SpotSelectionDialog(spots: spots),
                     );
+                    if (!mounted) return;
 
                     if (selectedSpot != null) {
                       final spotName = selectedSpot['spot'];
                       final placeType = selectedSpot['type'];
 
                       if (spotName == null || spotName is! String) {
-                        _showAlert(context, "資料錯誤", "找不到地點名稱。");
+                        _showAlert("資料錯誤", "找不到地點名稱。");
                         return;
                       }
 
-                      Navigator.pop(context);
-
-                      Future.microtask(() {
-                        Navigator.of(context, rootNavigator: true).push(
-                          MaterialPageRoute(
-                            builder: (context) => ChangeNotifierProvider(
-                              create: (_) => ChatController(
-                                initialPrompt: '我想在 $spotName 拍些照片',
-                                taskService: taskController.taskService,
-                                placeType: placeType,
-                              ),
-                              child: const ChatPage(),
+                      // 關閉 TaskChoiceDialog 再導頁
+                      navigator.pop();
+                      navigator.push(
+                        MaterialPageRoute(
+                          builder: (_) => ChangeNotifierProvider(
+                            create: (_) => ChatController(
+                              initialPrompt: '我想在 $spotName 拍些照片',
+                              taskService: taskController.taskService,
+                              placeType: placeType,
                             ),
+                            child: const ChatPage(),
                           ),
-                        );
-                      });
+                        ),
+                      );
                     }
                   } else {
                     if (!mounted) return;
-                    _showAlert(context, "找不到地點", "附近沒有可拍攝的 $selectedLabel。");
+                    _showAlert("找不到地點", "附近沒有可拍攝的 $selectedLabel。");
                   }
                 } catch (e) {
                   if (!mounted) return;
-                  _showAlert(context, "錯誤", "無法取得定位或資料：${e.toString()}");
+                  _showAlert("錯誤", "無法取得定位或資料：${e.toString()}");
                 }
               },
               style: _buttonStyle(),
@@ -180,13 +196,20 @@ class _TaskChoiceDialogState extends State<TaskChoiceDialog> {
     );
   }
 
-  void _showAlert(BuildContext context, String title, String message) {
+  // 不再傳 context；在 State 內用 context，並加 mounted 保護
+  void _showAlert(String title, String message) {
+    if (!mounted) return;
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: Text(title),
         content: Text(message),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("OK"))],
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("OK"),
+          ),
+        ],
       ),
     );
   }

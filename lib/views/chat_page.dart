@@ -57,7 +57,7 @@ class _ChatPageState extends State<ChatPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.error_outline),
-            onPressed: () {/* TODO: 回報問題 */},
+            onPressed: () {},
           ),
         ],
       ),

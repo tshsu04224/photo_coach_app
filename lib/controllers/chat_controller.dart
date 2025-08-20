@@ -50,7 +50,8 @@ class ChatController extends ChangeNotifier {
         mainTopic: aiResp.mainTopic,
       ));
 
-      if (aiResp.subTopics.isNotEmpty) {
+      // 檢查 context 是否仍然有效
+      if (context.mounted && aiResp.subTopics.isNotEmpty) {
         _addMoodboardPrompt(aiResp, context);
       }
     } catch (e) {
@@ -77,7 +78,11 @@ class ChatController extends ChangeNotifier {
             fromUser: false,
             moodboardUrl: moodboardUrl,
           ));
-          _addTaskPrompt(aiResp, context);
+          
+          // 檢查 context 是否仍然有效
+          if (context.mounted) {
+            _addTaskPrompt(aiResp, context);
+          }
         } catch (e) {
           _messages.removeAt(loadingIndex);
           _addMessage(ChatMessage(text: '產生風格圖片錯誤：$e', fromUser: false));
@@ -89,7 +94,11 @@ class ChatController extends ChangeNotifier {
           text: "好的，這次我不產生風格圖片。\n如果你之後有需要，可以再告訴我喔～",
           fromUser: false,
         ));
-        _addTaskPrompt(aiResp, context);
+        
+        // 檢查 context 是否仍然有效
+        if (context.mounted) {
+          _addTaskPrompt(aiResp, context);
+        }
       },
     ));
   }
@@ -105,6 +114,9 @@ class ChatController extends ChangeNotifier {
 
         try {
           final generatedTask = await taskService.createTask(aiResp.mainTopic, aiResp.subTopics);
+          
+          // 檢查 context 是否仍然有效
+          if (!context.mounted) return;
           
           // 將生成的任務添加到 TaskController
           final taskController = Provider.of<TaskController>(context, listen: false);

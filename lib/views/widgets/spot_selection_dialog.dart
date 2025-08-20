@@ -4,9 +4,9 @@ class SpotSelectionDialog extends StatefulWidget {
   final List<Map<String, dynamic>> spots;
 
   const SpotSelectionDialog({
-    Key? key,
+    super.key,
     required this.spots,
-  }) : super(key: key);
+  });
 
   @override
   State<SpotSelectionDialog> createState() => _SpotSelectionDialogState();
@@ -91,8 +91,6 @@ class _SpotSelectionDialogState extends State<SpotSelectionDialog> {
                 final selectedSpot = widget.spots[selectedIndex!];
                 final spotName = selectedSpot['name'] ?? '無名稱';
                 final placeType = selectedSpot['type'] ?? 'custom';
-
-                print('選擇地點：$spotName, 類型：$placeType');
 
                 Navigator.pop(context, {
                   'spot': spotName,

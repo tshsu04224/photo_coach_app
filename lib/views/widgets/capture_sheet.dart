@@ -11,20 +11,23 @@ class CaptureSheet extends StatelessWidget {
   Future<void> _pickImage(BuildContext context, ImageSource source) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: source);
-    if (pickedFile != null) {
-      final image = File(pickedFile.path);
-      Navigator.pop(context); // 關閉 bottom sheet
+    if (pickedFile == null) return;
 
+    if (!context.mounted) return; // widget 可能已經被移除
+    final image = File(pickedFile.path);
+
+    Navigator.pop(context); // 關閉 bottom sheet
+
+    Future.microtask(() {
+      if (!context.mounted) return;
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => ImagePreviewPage(
-            imageFile: image,
-            subTaskId: subTaskId,
-          ),
+          builder: (_) =>
+              ImagePreviewPage(imageFile: image, subTaskId: subTaskId),
         ),
       );
-    }
+    });
   }
 
   @override
