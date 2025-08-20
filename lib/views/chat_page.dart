@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'widgets/chat_bubble.dart';
-import 'widgets/capture_sheet.dart';
 import 'package:provider/provider.dart';
 import '../controllers/chat_controller.dart';
 
@@ -106,12 +105,7 @@ class _ChatPageState extends State<ChatPage> {
                   IconButton(
                     icon: const Icon(Icons.image_outlined),
                     color: Colors.grey.shade600,
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        builder: (_) => const CaptureSheet(),
-                      );
-                    },
+                    onPressed: () {},
                   ),
                   Expanded(
                     child: TextField(

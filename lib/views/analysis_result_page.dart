@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import 'package:photo_coach/controllers/analyze_controller.dart';
 import 'package:provider/provider.dart';
 
@@ -42,8 +40,6 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                     _buildBulletPoints(controller),
                     const SizedBox(height: 16),
                     _buildTagButtons(),
-                    const SizedBox(height: 16),
-                    _buildAnalyzeButton(controller),
                   ],
                 ),
               ),
@@ -172,20 +168,6 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
             ),
           )
           .toList(),
-    );
-  }
-
-  Widget _buildAnalyzeButton(AnalyzeController controller) {
-    return ElevatedButton(
-      onPressed: () async {
-        final picker = ImagePicker();
-        final picked = await picker.pickImage(source: ImageSource.gallery);
-        if (picked != null) {
-          final file = File(picked.path);
-          await controller.analyze(file);
-        }
-      },
-      child: const Text("分析照片"),
     );
   }
 }

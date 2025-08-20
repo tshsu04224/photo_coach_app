@@ -11,18 +11,20 @@ class GeneratedTasksPage extends StatefulWidget {
 }
 
 class _GeneratedTasksPageState extends State<GeneratedTasksPage> {
+
   @override
   Widget build(BuildContext context) {
-    final taskController = Provider.of<TaskController>(context);
-    final todayTasks = taskController.tasksForSelectedDate;
+    final taskController = context.watch<TaskController>();
+    final allTasks = taskController.allTasks;
 
-    if (todayTasks.isEmpty) {
+    if (allTasks.isEmpty) {
       return const Scaffold(
         body: Center(child: Text("目前沒有任務")),
       );
     }
 
-    final task = todayTasks.first;
+    // 顯示最新的任務（最後添加的）
+    final task = allTasks.last;
 
     return Scaffold(
       appBar: AppBar(
@@ -49,9 +51,8 @@ class _GeneratedTasksPageState extends State<GeneratedTasksPage> {
               task: task,
               filterTags: null,
               onDelete: () {
-                // 執行刪除並更新畫面
+                // 執行刪除，TaskController.removeTask 會自動通知 UI 更新
                 taskController.removeTask(task);
-                setState(() {}); // 重新觸發 build，顯示 "目前沒有任務"
               },
             ),
           ],
