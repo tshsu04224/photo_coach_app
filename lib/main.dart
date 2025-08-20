@@ -2,8 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'controllers/auth_controller.dart';
-import 'controllers/task_controller.dart';
+import 'state_management/providers.dart';
 import 'app.dart';
 
 void main() {
@@ -11,10 +10,7 @@ void main() {
 
   runApp(
     MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthController()),
-        ChangeNotifierProvider(create: (_) => TaskController()),
-      ],
+      providers: appProviders,
       child: const MyApp(),
     ),
   );

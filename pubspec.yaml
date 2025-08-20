@@ -44,6 +44,7 @@ dependencies:
   logger: ^2.6.1
   http_parser: ^4.0.0
   geolocator: ^14.0.2
+  shared_preferences: ^2.2.2 # For storing user preferences locally
 
 
 dev_dependencies:
