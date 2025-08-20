@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'widgets/week_day_selector.dart';
 import '../controllers/task_controller.dart';
+import '../controllers/auth_controller.dart';
 import '../views/widgets/task_card.dart';
 import 'task_category_page.dart';
 
@@ -13,7 +14,17 @@ class TaskListPage extends StatefulWidget {
 }
 
 class _TaskListPageState extends State<TaskListPage> {
-  int? expandedIndex;
+  @override
+  void initState() {
+    super.initState();
+    // 延遲初始化並預先載入任務
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final taskController = Provider.of<TaskController>(context, listen: false);
+      final auth = context.read<AuthController>();
+      taskController.initialize(auth.token);
+      taskController.loadTasksAroundSelectedDate();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,46 +32,31 @@ class _TaskListPageState extends State<TaskListPage> {
       builder: (context, taskController, _) {
         final tasks = taskController.tasksForSelectedDate;
         final selectedDate = taskController.selectedDate;
+        final isLoading = taskController.isLoading;
 
         return Scaffold(
           appBar: AppBar(
             centerTitle: true,
             title: PopupMenuButton<String>(
               onSelected: (value) {
-                if (value == '任務清單') {
-                  // Do nothing, already on this page
-                } else if (value == '主題分類') {
+                if (value == '主題分類') {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => const TaskCategoryPage(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const TaskCategoryPage()),
                   );
                 }
               },
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: const [
-                  Text(
-                    '任務清單',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  Text('任務清單', style: TextStyle(fontWeight: FontWeight.bold)),
                   SizedBox(width: 4),
-                  Icon(
-                    Icons.arrow_drop_down,
-                    size: 20,
-                  ),
+                  Icon(Icons.arrow_drop_down, size: 20),
                 ],
               ),
-              itemBuilder: (context) => [
-                const PopupMenuItem(
-                  value: '任務清單',
-                  child: Text('任務清單'),
-                ),
-                const PopupMenuItem(
-                  value: '主題分類',
-                  child: Text('主題分類'),
-                ),
+              itemBuilder: (context) => const [
+                PopupMenuItem(value: '任務清單', child: Text('任務清單')),
+                PopupMenuItem(value: '主題分類', child: Text('主題分類')),
               ],
             ),
             backgroundColor: Colors.white,
@@ -70,6 +66,7 @@ class _TaskListPageState extends State<TaskListPage> {
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // 日期切換區（← 日期 →）
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Row(
@@ -111,7 +108,11 @@ class _TaskListPageState extends State<TaskListPage> {
                           },
                           child: Text(
                             "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}",
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey,
+                            ),
                           ),
                         ),
                       ),
@@ -128,22 +129,26 @@ class _TaskListPageState extends State<TaskListPage> {
                 ),
               ),
 
+              // 日期選擇條
               const WeekDaySelector(),
               const SizedBox(height: 4),
 
+              // 任務清單區域
               Expanded(
-                child: tasks.isEmpty
-                    ? const Center(child: Text("今天沒有任務"))
-                    : ListView.builder(
-                  itemCount: tasks.length,
-                  itemBuilder: (context, index) {
-                    final task = tasks[index];
-                    return TaskCard(
-                      task: task,
-                      filterTags: null,
-                    );
-                  },
-                ),
+                child: isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : tasks.isEmpty
+                ? const Center(child: Text("今天沒有任務"))
+                : ListView.builder(
+                    itemCount: tasks.length,
+                    itemBuilder: (context, index) {
+                      final task = tasks[index];
+                      return TaskCard(
+                        task: task,
+                        filterTags: null,
+                      );
+                    },
+                  ),
               ),
             ],
           ),
@@ -152,4 +157,3 @@ class _TaskListPageState extends State<TaskListPage> {
     );
   }
 }
-

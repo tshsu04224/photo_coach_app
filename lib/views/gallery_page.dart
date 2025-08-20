@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class GalleryPage extends StatefulWidget {
-  final int userId;
+  final int? userId;
   const GalleryPage({super.key, required this.userId});
 
   @override
@@ -22,7 +22,7 @@ class _GalleryPageState extends State<GalleryPage> {
 
   Future<void> fetchImages() async {
     final response = await http.get(
-      Uri.parse('http://172.20.10.5:8000/api/photo/user/${widget.userId}'),
+      Uri.parse('http://10.0.2.2:8000/photo/user/${widget.userId}'),
     );
 
     if (!mounted) return; 
@@ -30,7 +30,7 @@ class _GalleryPageState extends State<GalleryPage> {
       final List<dynamic> data = json.decode(response.body);
       setState(() {
         imageUrls = data
-            .map((item) => "http://172.20.10.5:8000/${item['file_path']}")
+            .map((item) => "http://10.0.2.2:8000/${item['file_path']}")
             .toList();
         isLoading = false;
       });
@@ -52,7 +52,7 @@ class _GalleryPageState extends State<GalleryPage> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : imageUrls.isEmpty
-          ? const Center(child: Text("尚無上傳作品"))
+          ? Center(child: Text("尚無上傳作品"))
           : GridView.builder(
               padding: const EdgeInsets.all(12),
               itemCount: imageUrls.length,

@@ -9,6 +9,8 @@ import 'widgets/bottom_nav_bar.dart';
 import '../controllers/chat_controller.dart';
 import '../views/widgets/place_type_select_dialog.dart';
 import '../views/chat_page.dart';
+import '../controllers/auth_controller.dart';
+import '../controllers/task_controller.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -20,12 +22,17 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = const [
-    HomePage(),
-    TaskCategoryPage(),
-    GalleryPage(userId: 123), // 替換為實際的 userId
-    SettingsPage(),
-  ];
+  List<Widget> get _pages {
+    final auth = Provider.of<AuthController>(context, listen: false);
+    final userId = auth.currentUser?.id;
+
+    return [
+      const HomePage(),
+      const TaskCategoryPage(),
+      GalleryPage(userId: userId),
+      const SettingsPage(),
+    ];
+  }
 
   void _onTabTapped(int index) {
     if (index == 2) {
@@ -35,7 +42,7 @@ class _MainPageState extends State<MainPage> {
           return _buildTaskChoiceDialog(context);
         },
       );
-    }else{
+    } else {
       setState(() {
         _selectedIndex = index >= 2 ? index - 1 : index; // 跳過中間相機按鈕
       });
@@ -70,7 +77,10 @@ Widget _buildTaskChoiceDialog(BuildContext context) {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const SizedBox(width: 24),
-              const Text("今天我想要...", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text(
+                "今天我想要...",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               IconButton(
                 icon: const Icon(Icons.close),
                 onPressed: () => Navigator.pop(context),
@@ -92,11 +102,16 @@ Widget _buildTaskChoiceDialog(BuildContext context) {
               if (selectedLabel != null) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   if (!context.mounted) return;
+                  final taskController = Provider.of<TaskController>(context, listen: false);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => ChangeNotifierProvider(
-                        create: (_) => ChatController(initialPrompt: '我想拍 $selectedLabel'),
+                        create: (_) =>
+                            ChatController(
+                              initialPrompt: '我想拍 $selectedLabel', 
+                              taskService: taskController.taskService
+                              ),
                         child: const ChatPage(),
                       ),
                     ),
@@ -109,7 +124,9 @@ Widget _buildTaskChoiceDialog(BuildContext context) {
               foregroundColor: Colors.black,
               side: const BorderSide(color: Colors.black, width: 1),
               minimumSize: const Size(double.infinity, 50),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             icon: Container(
               decoration: const BoxDecoration(
@@ -133,7 +150,9 @@ Widget _buildTaskChoiceDialog(BuildContext context) {
               foregroundColor: Colors.black,
               side: const BorderSide(color: Colors.black, width: 1),
               minimumSize: const Size(double.infinity, 50),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             icon: Container(
               decoration: const BoxDecoration(

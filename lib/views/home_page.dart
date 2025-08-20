@@ -243,139 +243,136 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-<<<<<<< HEAD
-  Widget _functionIcon(IconData icon, String label) {
-      return Column(
-        children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black,
-            child: Icon(icon, size: 28),
-          ),
-          const SizedBox(height: 6),
-          Text(label, style: const TextStyle(fontSize: 12)),
-        ],
-      );
-    }
+  // Widget _functionIcon(IconData icon, String label) {
+  //     return Column(
+  //       children: [
+  //         CircleAvatar(
+  //           radius: 28,
+  //           backgroundColor: Colors.white,
+  //           foregroundColor: Colors.black,
+  //           child: Icon(icon, size: 28),
+  //         ),
+  //         const SizedBox(height: 6),
+  //         Text(label, style: const TextStyle(fontSize: 12)),
+  //       ],
+  //     );
+  //   }
 
-  Widget _photoCard(String title, String subtitle, bool liked, {required String imagePath}) {
-    return Container(
-      width: 120,
-      margin: const EdgeInsets.only(right: 12),
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  imagePath,
-                  width: double.infinity,
-                  height: 80,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              if (liked)
-                const Positioned(
-                  top: 6,
-                  right: 6,
-                  child: Icon(Icons.favorite, color: Colors.black),
-                ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-          Text(subtitle, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-        ],
-      ),
-    );
-  }
+  // Widget _photoCard(String title, String subtitle, bool liked, {required String imagePath}) {
+  //   return Container(
+  //     width: 120,
+  //     margin: const EdgeInsets.only(right: 12),
+  //     padding: const EdgeInsets.all(8),
+  //     decoration: BoxDecoration(
+  //       color: Colors.white,
+  //       borderRadius: BorderRadius.circular(12),
+  //       boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
+  //     ),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Stack(
+  //           children: [
+  //             ClipRRect(
+  //               borderRadius: BorderRadius.circular(8),
+  //               child: Image.asset(
+  //                 imagePath,
+  //                 width: double.infinity,
+  //                 height: 80,
+  //                 fit: BoxFit.cover,
+  //               ),
+  //             ),
+  //             if (liked)
+  //               const Positioned(
+  //                 top: 6,
+  //                 right: 6,
+  //                 child: Icon(Icons.favorite, color: Colors.black),
+  //               ),
+  //           ],
+  //         ),
+  //         const SizedBox(height: 8),
+  //         Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+  //         Text(subtitle, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  // 拍攝任務選擇框
-  Widget _buildTaskChoiceDialog(BuildContext context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const SizedBox(width: 24),
-                const Text("今天我想要...", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
+  // // 拍攝任務選擇框
+  // Widget _buildTaskChoiceDialog(BuildContext context) {
+  //   return Dialog(
+  //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+  //     child: Padding(
+  //       padding: const EdgeInsets.all(24.0),
+  //       child: Column(
+  //         mainAxisSize: MainAxisSize.min,
+  //         children: [
+  //           Row(
+  //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //             children: [
+  //               const SizedBox(width: 24),
+  //               const Text("今天我想要...", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+  //               IconButton(
+  //                 icon: const Icon(Icons.close),
+  //                 onPressed: () => Navigator.pop(context),
+  //               ),
+  //             ],
+  //           ),
+  //           const SizedBox(height: 16),
 
-            // 建立主題按鈕
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.pop(context); // 關閉 dialog
-                Navigator.pushNamed(context, Routes.chat); // 導向聊天室
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
-                side: const BorderSide(color: Colors.black, width: 1),
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              icon: Container(
-                decoration: const BoxDecoration(
-                  color: Color(0xFF5B7DB1),
-                  shape: BoxShape.circle,
-                ),
-                padding: const EdgeInsets.all(6),
-                child: const Icon(Icons.add, color: Colors.white, size: 20),
-              ),
-              label: const Text("建立主題", style: TextStyle(fontSize: 14)),
-            ),
-            const SizedBox(height: 16),
+  //           // 建立主題按鈕
+  //           ElevatedButton.icon(
+  //             onPressed: () {
+  //               Navigator.pop(context); // 關閉 dialog
+  //               Navigator.pushNamed(context, Routes.chat); // 導向聊天室
+  //             },
+  //             style: ElevatedButton.styleFrom(
+  //               backgroundColor: Colors.white,
+  //               foregroundColor: Colors.black,
+  //               side: const BorderSide(color: Colors.black, width: 1),
+  //               minimumSize: const Size(double.infinity, 50),
+  //               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  //             ),
+  //             icon: Container(
+  //               decoration: const BoxDecoration(
+  //                 color: Color(0xFF5B7DB1),
+  //                 shape: BoxShape.circle,
+  //               ),
+  //               padding: const EdgeInsets.all(6),
+  //               child: const Icon(Icons.add, color: Colors.white, size: 20),
+  //             ),
+  //             label: const Text("建立主題", style: TextStyle(fontSize: 14)),
+  //           ),
+  //           const SizedBox(height: 16),
 
-            // GPS推薦按鈕
-            ElevatedButton.icon(
-              onPressed: () {
-                // TODO: 導向 GPS 推薦
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
-                side: const BorderSide(color: Colors.black, width: 1),
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              icon: Container(
-                decoration: const BoxDecoration(
-                  color: Color(0xFF5B7DB1),
-                  shape: BoxShape.circle,
-                ),
-                padding: const EdgeInsets.all(6),
-                child: const Icon(Icons.place, color: Colors.white, size: 20),
-              ),
-              label: const Text("GPS推薦", style: TextStyle(fontSize: 14)),
-            ),
-          ],
-        ),
-      ),
-    );
-=======
+  //           // GPS推薦按鈕
+  //           ElevatedButton.icon(
+  //             onPressed: () {
+  //               // TODO: 導向 GPS 推薦
+  //               Navigator.pop(context);
+  //             },
+  //             style: ElevatedButton.styleFrom(
+  //               backgroundColor: Colors.white,
+  //               foregroundColor: Colors.black,
+  //               side: const BorderSide(color: Colors.black, width: 1),
+  //               minimumSize: const Size(double.infinity, 50),
+  //               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  //             ),
+  //             icon: Container(
+  //               decoration: const BoxDecoration(
+  //                 color: Color(0xFF5B7DB1),
+  //                 shape: BoxShape.circle,
+  //               ),
+  //               padding: const EdgeInsets.all(6),
+  //               child: const Icon(Icons.place, color: Colors.white, size: 20),
+  //             ),
+  //             label: const Text("GPS推薦", style: TextStyle(fontSize: 14)),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
   void sendInitialPrompt(String prompt, BuildContext context) {
     Navigator.pushNamed(context, '/chat', arguments: prompt);
->>>>>>> 6b31407b2662a229edb491b8d91420b045e23c9b
   }
 }

@@ -21,7 +21,6 @@ class _TaskCategoryPageState extends State<TaskCategoryPage> {
   Widget build(BuildContext context) {
     final taskController = Provider.of<TaskController>(context);
     final allTasks = taskController.allTasks;
-
     final filteredTasks = selectedTags.isEmpty
         ? allTasks
         : allTasks.where((task) {
