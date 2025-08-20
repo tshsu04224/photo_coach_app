@@ -1,4 +1,3 @@
-// 登入頁面
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../controllers/auth_controller.dart';
@@ -25,19 +24,27 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     final auth = Provider.of<AuthController>(context, listen: false);
-    final success = await auth.login(
-      _emailController.text.trim(),
-      _passwordController.text.trim(),
-    );
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = "請輸入信箱與密碼";
+      });
+      return;
+    }
+
+    final success = await auth.login(email, password);
 
     if (!mounted) return;
 
     setState(() => _isLoading = false);
 
     if (success) {
-      Navigator.pushReplacementNamed(context, Routes.home);
+      Navigator.pushReplacementNamed(context, Routes.home); // 調整成你的首頁路由
     } else {
-      setState(() => _errorMessage = '帳號或密碼錯誤');
+      setState(() => _errorMessage = auth.error ?? '登入失敗');
     }
   }
 
@@ -71,6 +78,7 @@ class _LoginPageState extends State<LoginPage> {
               const Text("請輸入信箱以登入", style: TextStyle(color: Colors.grey)),
               const SizedBox(height: 24),
 
+              // Email
               TextField(
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: '信箱'),
@@ -78,6 +86,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 16),
 
+              // Password
               TextField(
                 controller: _passwordController,
                 decoration: InputDecoration(
@@ -96,10 +105,11 @@ class _LoginPageState extends State<LoginPage> {
                 obscureText: _isObscured,
               ),
 
+              // Forgot Password
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {}, // 忘記密碼尚未實作
+                  onPressed: () {},
                   child: const Text(
                     "忘記密碼？",
                     style: TextStyle(color: Colors.blue),
@@ -107,6 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
 
+              // Error Message
               if (_errorMessage != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 15),
@@ -116,6 +127,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
 
+              // Login Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -139,25 +151,30 @@ class _LoginPageState extends State<LoginPage> {
               const Divider(),
               const SizedBox(height: 30),
 
+              // Google Login (not implemented)
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
-                  onPressed: () {}, // 未實作 Google 登入
+                  onPressed: () {},
                   icon: const Icon(Icons.g_mobiledata, color: Colors.red),
                   label: const Text("透過 Google 登入"),
                 ),
               ),
               const SizedBox(height: 10),
+
+              // Facebook Login (not implemented)
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
-                  onPressed: () {}, // 未實作 Facebook 登入
+                  onPressed: () {},
                   icon: const Icon(Icons.facebook, color: Colors.blue),
                   label: const Text("透過 Facebook 登入"),
                 ),
               ),
 
               const SizedBox(height: 24),
+
+              // Register navigation
               Center(
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
