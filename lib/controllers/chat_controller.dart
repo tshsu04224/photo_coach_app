@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/chat_message.dart';
 import '../services/api_service.dart';
-import '../controllers/task_controller.dart';
+import '../services/task_service.dart';
 import '../views/generated_tasks_page.dart';
+import 'task_controller.dart';
 
 class ChatController extends ChangeNotifier {
   final List<ChatMessage> _messages = [];
@@ -15,7 +16,8 @@ class ChatController extends ChangeNotifier {
 
   List<ChatMessage> get messages => _messages;
 
-  ChatController({this.initialPrompt, this.placeType});
+  ChatController({this.initialPrompt, this.placeType, required this.taskService});
+  final TaskService taskService;
 
   void init(BuildContext context) {
     if (_hasInit) return;
@@ -102,17 +104,17 @@ class ChatController extends ChangeNotifier {
         final loadingIndex = _messages.length - 1;
 
         try {
-
-          final generatedTask = await ApiService.generateTasks(aiResp.mainTopic, aiResp.subTopics);
+          final generatedTask = await taskService.createTask(aiResp.mainTopic, aiResp.subTopics);
+          
+          // 將生成的任務添加到 TaskController
+          final taskController = Provider.of<TaskController>(context, listen: false);
+          taskController.addTask(generatedTask);
 
           _messages.removeAt(loadingIndex);
           _addMessage(ChatMessage(
             text: "以下是幫你產生的拍攝任務：",
             fromUser: false,
           ));
-
-          final taskController = Provider.of<TaskController>(context, listen: false);
-          taskController.addTaskForDate(DateTime.now(), generatedTask);
 
           Navigator.push(
             context,
@@ -147,6 +149,4 @@ class ChatController extends ChangeNotifier {
     _messages[messageIndex].subTopics!.removeAt(topicIndex);
     notifyListeners();
   }
-
-
 }
