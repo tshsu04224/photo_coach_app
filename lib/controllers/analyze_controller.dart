@@ -1,24 +1,30 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:photo_coach/services/analytics_service.dart';
+import 'package:photo_coach/services/analyze_service.dart';
 import 'package:logger/logger.dart';
 
 final _logger = Logger();
 
 class AnalyzeController extends ChangeNotifier {
+  AnalyzeController({required this.analyzeService});
+  final AnalyzeService analyzeService;
+
   bool isLoading = false;
   File? analyzedImage;
   String? highlight, suggestion, tip, challenge, score;
 
-  Future<void> analyze(File file) async {
+  Future<void> analyze(File file, int subTaskId) async {
     isLoading = true;
     notifyListeners();
 
     try {
       analyzedImage = file;
+      final imageBytes = await file.readAsBytes();
 
-      // 將耗時操作移至 compute 中執行
-      final result = await compute(_analyzeInBackground, file.path);
+      final result = await analyzeService.analyzeImageBytes(
+        imageBytes,
+        subTaskId,
+      );
 
       _logger.i("分析結果：$result");
 
@@ -39,11 +45,4 @@ class AnalyzeController extends ChangeNotifier {
       notifyListeners();
     }
   }
-}
-
-Future<Map<String, dynamic>> _analyzeInBackground(String filePath) async {
-  final file = File(filePath);
-  final imageBytes = await file.readAsBytes();
-  final result = await AnalyzeService.analyzeImageBytes(imageBytes);
-  return result;
 }
