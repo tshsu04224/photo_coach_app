@@ -9,10 +9,13 @@ import '../controllers/task_controller.dart';
 import '../controllers/chat_controller.dart';
 import '../services/task_service.dart';
 import '../services/auth_service.dart';
+import 'package:photo_coach/controllers/feedback_controller.dart';
+import 'package:flutter/material.dart';
 
 const String _baseUrl = 'http://10.0.2.2:8000';
 
 final List<SingleChildWidget> appProviders = [
+  ChangeNotifierProvider(create: (_) => FeedbackController()),
   // 1. 提供 AuthController（有 token）
   ChangeNotifierProvider<AuthController>(
     create: (_) => AuthController(authService: AuthService(baseUrl: _baseUrl)),
