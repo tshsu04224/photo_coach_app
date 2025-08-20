@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import '../controllers/auth_controller.dart';
 import 'package:photo_coach/controllers/feedback_controller.dart';
-import 'package:flutter/material.dart';
 import '../controllers/task_controller.dart';
 import '../controllers/chat_controller.dart';
 import '../services/task_service.dart';

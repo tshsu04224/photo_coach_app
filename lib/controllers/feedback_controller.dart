@@ -11,7 +11,6 @@ class FeedbackController extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     final result = await FeedbackService.getFeedback(input);
-    print("🔥 從 API 拿到的回饋文字：$result");
     feedback = result;
 
 

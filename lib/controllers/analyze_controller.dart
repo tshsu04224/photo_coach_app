@@ -1,9 +1,8 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:photo_coach/services/analyze_service.dart';
-import 'package:logger/logger.dart';
-import 'package:photo_coach/services/analytics_service.dart';
 import 'package:photo_coach/utils/tag_icon_mapping.dart';
+import 'package:logger/logger.dart';
 
 final _logger = Logger();
 
@@ -56,13 +55,11 @@ class AnalyzeController extends ChangeNotifier {
       analyzedImage = file;
       final imageBytes = await file.readAsBytes();
 
-//       final result = await analyzeService.analyzeImageBytes(
-//         imageBytes,
-//         subTaskId,
-//       );
+      final result = await analyzeService.analyzeImageBytes(
+        imageBytes,
+        subTaskId,
+      );
 
-      // 背景執行：把位元組丟進分析服務（請保持你原本的 AnalyzeService）
-      final result = await compute(_analyzeInBackground, file.path);
       _logger.i("分析結果：$result");
 
       // 格式

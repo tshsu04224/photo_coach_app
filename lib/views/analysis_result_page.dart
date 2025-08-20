@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:photo_coach/controllers/analyze_controller.dart';
 import 'package:photo_coach/controllers/feedback_controller.dart';
 import 'package:provider/provider.dart';
-import 'package:photo_coach/models/feedback_model.dart';
 import 'package:photo_coach/utils/tag_icon_mapping.dart';
 
 class AnalysisResultPage extends StatefulWidget {
@@ -24,26 +23,17 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
         child: controller.isLoading
             ? const Center(child: CircularProgressIndicator())
             : SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildImageSection(controller),
-                    const SizedBox(height: 16),
-                    const Text(
-                      '三分法構圖實作',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    _buildRatingRow(controller),
-                    const SizedBox(height: 12),
-                    _buildBulletPoints(controller),
-                    const SizedBox(height: 16),
-                    _buildTagButtons(),
-                  ],
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildImageSection(controller),
+              const SizedBox(height: 16),
+              const Text(
+                '分析結果',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 8),
@@ -186,69 +176,7 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
     )
         : const SizedBox(); // 若沒有內容就不顯示
   }
-
-  Widget _buildAnalyzeButton(AnalyzeController analyzeController) {
-    return ElevatedButton(
-      onPressed: () async {
-        // 提前取得 context 相關內容，避免 async gap 警告
-        final picker = ImagePicker();
-        final feedbackController = context.read<FeedbackController>();
-
-        final picked = await picker.pickImage(source: ImageSource.gallery);
-        if (picked != null) {
-          final file = File(picked.path);
-
-          // 1) 進行分析（AnalyzeController 會以新格式填入 observations / techniquesByCategory / techniques）
-          await analyzeController.analyze(file);
-
-          // 2) 以「新格式」建立 FeedbackInput
-          final feedbackInput = FeedbackInput(
-            observation: analyzeController.observations,
-            techniques: analyzeController.techniquesByCategory,
-          );
-
-          // 3) 呼叫回饋 API
-          await feedbackController.fetchFeedback(feedbackInput);
-        }
-      },
-      child: const Text("分析照片"),
-    );
-  }
 }
-
-/// 測試用：用新格式模擬分析結果
-Widget _buildFakeTestButton(BuildContext context, AnalyzeController c) {
-  return ElevatedButton(
-    onPressed: () async {
-      final feedbackController = context.read<FeedbackController>();
-
-      // 模擬資料
-      c.observations = [
-        "主體是一隻貓，位於畫面右側，佔畫面約 35%",
-        "光線從左上角進入",
-        "拍攝視角略為仰角"
-      ];
-      c.techniquesByCategory = {
-        '構圖技巧': ['三分法', '對角線構圖'],
-        '光線運用': ['側光'],
-        '拍攝角度': ['仰角'],
-      };
-
-      //
-      c.refreshBadges();
-
-      // 呼叫回饋 API（新格式）
-      final input = FeedbackInput(
-        observation: c.observations,
-        techniques: c.techniquesByCategory,
-      );
-      await feedbackController.fetchFeedback(input);
-    },
-    child: const Text("測試"),
-  );
-}
-
-
 
 class _TagButton extends StatelessWidget {
   final String label;
